@@ -1,6 +1,6 @@
 // API Service Layer - Centralized API calls
 
-const API_BASE_URL = 'http://192.168.86.249:3001';
+const API_BASE_URL = 'http://18.212.37.198:3001';
 
 // Contest API calls
 export const contestAPI = {
