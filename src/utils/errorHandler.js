@@ -1,4 +1,5 @@
 // Error handling utilities for better user experience
+import { reportError } from './errorReporter';
 
 // Error types for categorization
 export const ERROR_TYPES = {
@@ -27,7 +28,7 @@ export const categorizeError = (error) => {
   // Check for network errors
   if (error.message?.includes('Failed to fetch') || 
       error.message?.includes('NetworkError') ||
-      error.name === 'TypeError' && error.message?.includes('fetch')) {
+      (error.name === 'TypeError' && error.message?.includes('fetch'))) {
     return ERROR_TYPES.NETWORK;
   }
 
@@ -82,25 +83,19 @@ export const handleAsyncOperation = async (operation, errorHandler) => {
     const errorType = categorizeError(error);
     const userMessage = getErrorMessage(error);
     
-    // Log error in development
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Async operation error:', {
-        error,
-        type: errorType,
-        message: userMessage
-      });
-    }
+    // Report error using centralized error reporting
+    reportError(error, errorType, { userMessage });
 
     // Call custom error handler if provided
     if (errorHandler) {
       errorHandler(error, errorType, userMessage);
     }
 
-    throw {
-      originalError: error,
-      type: errorType,
-      userMessage
-    };
+    const customError = new Error(userMessage);
+    customError.originalError = error;
+    customError.type = errorType;
+    customError.userMessage = userMessage;
+    throw customError;
   }
 };
 
@@ -143,9 +138,7 @@ export const safeExecute = (operation, fallback = null) => {
   try {
     return operation();
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Safe execute error:', error);
-    }
+    reportError(error, ERROR_TYPES.UNKNOWN, { operation: 'safeExecute' });
     return fallback;
   }
 };

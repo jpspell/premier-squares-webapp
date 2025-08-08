@@ -114,7 +114,15 @@ app.get('*', (req, res) => {
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  // Log error for server-side debugging
+  console.error('Server error:', err.stack);
+  
+  // In production, you might want to send to external logging service
+  if (process.env.NODE_ENV === 'production') {
+    // Example: send to external logging service
+    // logger.error('Server error', { error: err.message, stack: err.stack });
+  }
+  
   res.status(500).send('Something broke!');
 });
 

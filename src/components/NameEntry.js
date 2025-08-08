@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { contestAPI } from '../services/apiService';
-import { validateNames, validateNamesForSave, validateName } from '../utils/validation';
+import { validateNames, validateNamesForSave } from '../utils/validation';
 import { getErrorMessage } from '../utils/errorHandler';
+import { reportError } from '../utils/errorReporter';
 
 function NameEntry({ contestId, onNamesSubmitted }) {
   const [names, setNames] = useState(Array(100).fill(''));
@@ -43,7 +44,7 @@ function NameEntry({ contestId, onNamesSubmitted }) {
             setHasChanges(hasAnyNames);
           }
       } catch (error) {
-        console.error('Error fetching existing names:', error);
+        reportError(error, 'network', { operation: 'fetchExistingNames', contestId });
         // Continue with empty form if fetch fails
         // Don't set error state here to allow user to still interact with form
       } finally {

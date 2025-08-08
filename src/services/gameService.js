@@ -1,4 +1,5 @@
 import { contestAPI } from './apiService';
+import { reportError } from '../utils/errorReporter';
 
 // Service for fetching NFL game data from ESPN API
 export async function getNFLGameData(eventId) {
@@ -61,7 +62,7 @@ export async function getNFLGameData(eventId) {
     };
     
   } catch (error) {
-    console.error('Error fetching NFL game data:', error);
+    reportError(error, 'network', { operation: 'getNFLGameData', eventId });
     return null;
   }
 }
@@ -109,7 +110,7 @@ export async function getAllNFLGames() {
     return games;
     
   } catch (error) {
-    console.error('Error fetching all NFL games:', error);
+    reportError(error, 'network', { operation: 'getAllNFLGames' });
     return [];
   }
 }
@@ -119,7 +120,7 @@ export async function createSquaresGame(eventId, costPerSquare) {
   try {
     return await contestAPI.createContest(eventId, costPerSquare);
   } catch (error) {
-    console.error('Error creating squares game:', error);
+    reportError(error, 'server', { operation: 'createSquaresGame', eventId, costPerSquare });
     throw error;
   }
 }

@@ -1,6 +1,6 @@
 // API Service Layer - Centralized API calls
 import config from '../config/config';
-import { handleAsyncOperation, categorizeError, getErrorMessage } from '../utils/errorHandler';
+import { handleAsyncOperation, getErrorMessage } from '../utils/errorHandler';
 import { secureFetch } from '../utils/securityUtils';
 
 const API_BASE_URL = config.API_BASE_URL;

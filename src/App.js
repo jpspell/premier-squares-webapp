@@ -30,9 +30,6 @@ function ContestPage() {
 // Main app component with routing
 function AppContent() {
   const [currentPage, setCurrentPage] = useState('home');
-  const [selectedGameId, setSelectedGameId] = useState(null);
-  const [squareCost, setSquareCost] = useState(10);
-  const [contestId, setContestId] = useState(null);
   const navigate = useNavigate();
 
   const handleGameSelect = (eventId, costPerSquare, contestIdFromResponse) => {
@@ -41,9 +38,6 @@ function AppContent() {
       return;
     }
     
-    setSelectedGameId(eventId);
-    setSquareCost(costPerSquare);
-    setContestId(contestIdFromResponse);
     // Navigate to contest page using the documentId
     navigate(`/contests/${contestIdFromResponse}`);
   };

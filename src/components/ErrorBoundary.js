@@ -1,4 +1,5 @@
 import React from 'react';
+import { reportError } from '../utils/errorReporter';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -19,7 +20,10 @@ class ErrorBoundary extends React.Component {
   componentDidCatch(error, errorInfo) {
     // Log the error to console in development
     if (process.env.NODE_ENV === 'development') {
-      console.error('Error caught by boundary:', error, errorInfo);
+      reportError(error, 'client', { 
+      component: 'ErrorBoundary', 
+      errorInfo: errorInfo?.componentStack 
+    });
     }
 
     // Store error details for potential reporting

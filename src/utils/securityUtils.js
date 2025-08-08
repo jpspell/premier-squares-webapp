@@ -1,5 +1,6 @@
 // Security utilities for HTTPS enforcement and security checks
 import { SECURITY_CONFIG, securityUtils } from '../config/security';
+import { reportError } from './errorReporter';
 
 /**
  * Check if the current environment requires HTTPS
@@ -51,7 +52,7 @@ export const validateSecureUrl = (url) => {
            urlObj.hostname === 'localhost' ||
            urlObj.hostname === '127.0.0.1';
   } catch (error) {
-    console.error('Invalid URL:', url);
+    reportError(error, 'validation', { url });
     return false;
   }
 };

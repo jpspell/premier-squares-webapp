@@ -6,7 +6,6 @@ export const SECURITY_CONFIG = {
     scriptSrc: [
       "'self'",
       "'unsafe-inline'",
-      "'unsafe-eval'",
       "https://pagead2.googlesyndication.com",
       "https://www.googletagmanager.com",
       "https://www.google-analytics.com"
@@ -86,6 +85,7 @@ export const SECURITY_CONFIG = {
   BLOCKED_PROTOCOLS: [
     'data:',
     'blob:',
+    // eslint-disable-next-line no-script-url
     'javascript:',
     'vbscript:'
   ],
@@ -94,7 +94,7 @@ export const SECURITY_CONFIG = {
   VALIDATION_PATTERNS: {
     eventId: /^[a-zA-Z0-9_-]+$/,
     email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-    phone: /^[\+]?[1-9][\d]{0,15}$/
+    phone: /^[+]?[1-9][\d]{0,15}$/
   },
 
   // Maximum input lengths

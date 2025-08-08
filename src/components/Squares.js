@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { getNFLGameData } from '../services/gameService';
 import { contestAPI } from '../services/apiService';
+import { reportError } from '../utils/errorReporter';
 
 function Squares() {
   const { documentId } = useParams();
@@ -30,7 +31,7 @@ function Squares() {
         if (contestEventId) {
           setEventId(contestEventId);
         } else {
-          console.error('No eventId found in contest data');
+          reportError(new Error('No eventId found in contest data'), 'validation', { contestId: documentId });
           setError("No event ID found in contest data");
           setLoading(false);
           return;
@@ -44,7 +45,7 @@ function Squares() {
            
         setNames(namesObject);
       } catch (err) {
-        console.error('Error fetching contest data:', err.message);
+        reportError(err, 'network', { operation: 'fetchContestData', contestId: documentId });
         setError("Failed to fetch contest data");
         setLoading(false);
       }
@@ -85,13 +86,13 @@ function Squares() {
            
           setGameData(transformedData);
         } else {
-          console.error('No game data returned from API');
+          reportError(new Error('No game data returned from API'), 'server', { eventId });
           if (showLoading) {
             setError("Failed to fetch game data");
           }
         }
       } catch (err) {
-        console.error('Error fetching game data:', err.message);
+        reportError(err, 'network', { operation: 'fetchGameData', eventId });
         if (showLoading) {
           setError(err.message);
         }

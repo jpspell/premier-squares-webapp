@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getAllNFLGames, createSquaresGame } from '../services/gameService';
 import { validateEventId, validateCostPerSquare } from '../utils/validation';
+import { reportError } from '../utils/errorReporter';
 
 function GameSelector({ onGameSelect }) {
   const [games, setGames] = useState([]);
@@ -17,7 +18,7 @@ function GameSelector({ onGameSelect }) {
         setGames(gamesData);
       } catch (err) {
         setError('Failed to fetch games');
-        console.error('Error fetching games:', err);
+        reportError(err, 'network', { operation: 'fetchGames' });
       } finally {
         setLoading(false);
       }
