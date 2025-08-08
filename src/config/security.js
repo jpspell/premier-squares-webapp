@@ -5,7 +5,7 @@ export const SECURITY_CONFIG = {
     defaultSrc: ["'self'"],
     scriptSrc: [
       "'self'",
-      "'unsafe-inline'",
+      "'nonce-google-adsense'",
       "https://pagead2.googlesyndication.com",
       "https://www.googletagmanager.com",
       "https://www.google-analytics.com"
