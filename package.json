@@ -9,10 +9,10 @@
     "react-scripts": "5.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "set NODE_ENV=development&& react-scripts start",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "build": "set REACT_APP_API_URL=https://z414f9tg84.execute-api.us-east-1.amazonaws.com/prod&& react-scripts build"
+    "build": "set NODE_ENV=production&& set REACT_APP_API_URL=https://z414f9tg84.execute-api.us-east-1.amazonaws.com/prod&& react-scripts build"
   },
   "eslintConfig": {
     "extends": [

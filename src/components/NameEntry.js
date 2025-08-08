@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { contestAPI } from '../services/apiService';
 import { validateNames, validateNamesForSave, validateName } from '../utils/validation';
+import { getErrorMessage } from '../utils/errorHandler';
 
 function NameEntry({ contestId, onNamesSubmitted }) {
   const [names, setNames] = useState(Array(100).fill(''));
@@ -44,6 +45,7 @@ function NameEntry({ contestId, onNamesSubmitted }) {
       } catch (error) {
         console.error('Error fetching existing names:', error);
         // Continue with empty form if fetch fails
+        // Don't set error state here to allow user to still interact with form
       } finally {
         setIsLoading(false);
       }
@@ -95,7 +97,7 @@ function NameEntry({ contestId, onNamesSubmitted }) {
         setShowToast(false);
       }, 3000);
     } catch (error) {
-      setError('Failed to save names. Please try again.');
+      setError(getErrorMessage(error) || 'Failed to save names. Please try again.');
     }
   };
 
@@ -122,7 +124,7 @@ function NameEntry({ contestId, onNamesSubmitted }) {
         onNamesSubmitted();
       }
     } catch (error) {
-      setError('Failed to submit names. Please try again.');
+      setError(getErrorMessage(error) || 'Failed to submit names. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

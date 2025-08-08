@@ -5,6 +5,7 @@ import Navigation from './components/Navigation';
 import Squares from './components/Squares';
 import GameSelector from './components/GameSelector';
 import NameEntry from './components/NameEntry';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // Contest route component that gets the documentId from URL params
 function ContestPage() {
@@ -18,7 +19,9 @@ function ContestPage() {
 
   return (
     <div className="App">
-      <NameEntry contestId={documentId} onNamesSubmitted={handleNamesSubmitted} />
+      <ErrorBoundary>
+        <NameEntry contestId={documentId} onNamesSubmitted={handleNamesSubmitted} />
+      </ErrorBoundary>
     </div>
   );
 }
@@ -47,12 +50,18 @@ function AppContent() {
   const renderPage = () => {
     switch (currentPage) {
       case 'squares':
-        return <Squares />;
+        return (
+          <ErrorBoundary>
+            <Squares />
+          </ErrorBoundary>
+        );
       case 'home':
       default:
         return (
           <div className="home-container">
-            <GameSelector onGameSelect={handleGameSelect} />
+            <ErrorBoundary>
+              <GameSelector onGameSelect={handleGameSelect} />
+            </ErrorBoundary>
           </div>
         );
     }
@@ -97,22 +106,26 @@ function ScrollPreventer() {
 
 function App() {
   return (
-    <Router>
-      <ScrollPreventer />
-      <Routes>
-        <Route path="/" element={
-          <div className="App no-scroll home-page">
-            <AppContent />
-          </div>
-        } />
-        <Route path="/contests/:documentId" element={<ContestPage />} />
-        <Route path="/contests/:documentId/squares" element={
+    <ErrorBoundary>
+      <Router>
+        <ScrollPreventer />
+        <Routes>
+          <Route path="/" element={
+            <div className="App no-scroll home-page">
+              <AppContent />
+            </div>
+          } />
+          <Route path="/contests/:documentId" element={<ContestPage />} />
+                  <Route path="/contests/:documentId/squares" element={
           <div className="App no-scroll squares-page">
-            <Squares />
+            <ErrorBoundary>
+              <Squares />
+            </ErrorBoundary>
           </div>
         } />
-      </Routes>
-    </Router>
+        </Routes>
+      </Router>
+    </ErrorBoundary>
   );
 }
 
