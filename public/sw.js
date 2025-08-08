@@ -1,6 +1,7 @@
 // Service Worker for caching and security (AWS handles HTTPS redirects)
-const CACHE_NAME = 'premier-squares-v2';
-const STATIC_CACHE_NAME = 'premier-squares-static-v2';
+const CACHE_NAME = 'premier-squares-v3';
+const STATIC_CACHE_NAME = 'premier-squares-static-v3';
+const API_CACHE_NAME = 'premier-squares-api-v3';
 
 // Install event - cache important resources
 self.addEventListener('install', (event) => {
@@ -21,6 +22,13 @@ self.addEventListener('install', (event) => {
             '/static/js/',
             '/static/css/',
             '/static/media/'
+          ]);
+        }),
+      caches.open(API_CACHE_NAME)
+        .then((cache) => {
+          // Cache API responses for offline use
+          return cache.addAll([
+            // Add any critical API endpoints here
           ]);
         })
     ])
@@ -87,6 +95,22 @@ self.addEventListener('fetch', (event) => {
             });
         })
     );
+  } else if (url.pathname.startsWith('/api/') || url.hostname.includes('espn.com')) {
+    // API requests - network-first with fallback to cache
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response.status === 200) {
+            const responseClone = response.clone();
+            caches.open(API_CACHE_NAME)
+              .then((cache) => cache.put(request, responseClone));
+          }
+          return response;
+        })
+        .catch(() => {
+          return caches.match(request);
+        })
+    );
   } else {
     // Default strategy for other requests
     event.respondWith(
@@ -105,7 +129,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME && cacheName !== STATIC_CACHE_NAME) {
+          if (cacheName !== CACHE_NAME && cacheName !== STATIC_CACHE_NAME && cacheName !== API_CACHE_NAME) {
             return caches.delete(cacheName);
           }
         })

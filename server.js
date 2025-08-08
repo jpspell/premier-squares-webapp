@@ -104,6 +104,15 @@ app.use((req, res, next) => {
   next();
 });
 
+// Health check endpoint for network status testing
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
 // Serve static files from the React app build directory
 app.use(express.static(path.join(__dirname, 'build')));
 

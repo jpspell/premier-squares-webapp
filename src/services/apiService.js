@@ -2,23 +2,45 @@
 import config from '../config/config';
 import { handleAsyncOperation, getErrorMessage } from '../utils/errorHandler';
 import { secureFetch } from '../utils/securityUtils';
+import { storeContestData, getContestData, isDataStale } from '../utils/offlineStorage';
+import { createRetryableOperation } from '../utils/retryUtils';
 
 const API_BASE_URL = config.API_BASE_URL;
 
 // Contest API calls
 export const contestAPI = {
   // Get contest by ID
-  getContest: async (contestId) => {
+  getContest: createRetryableOperation(async (contestId) => {
     return handleAsyncOperation(async () => {
-      const response = await secureFetch(`${API_BASE_URL}/contests/${contestId}`);
-      if (!response.ok) {
-        const error = new Error(`HTTP error! status: ${response.status}`);
-        error.status = response.status;
+      try {
+        const response = await secureFetch(`${API_BASE_URL}/contests/${contestId}`);
+        if (!response.ok) {
+          const error = new Error(`HTTP error! status: ${response.status}`);
+          error.status = response.status;
+          throw error;
+        }
+        const data = await response.json();
+        
+        // Store successful response for offline use
+        await storeContestData(contestId, data);
+        
+        return data;
+      } catch (error) {
+        // If network request fails, try to get cached data
+        const cachedData = await getContestData(contestId);
+        if (cachedData) {
+          // Add a flag to indicate this is cached data
+          const offlineData = {
+            ...cachedData,
+            _isOffline: true,
+            _cachedAt: Date.now()
+          };
+          return offlineData;
+        }
         throw error;
       }
-      return response.json();
     });
-  },
+  }, 'aggressive'),
 
   // Create new contest
   createContest: async (eventId, costPerSquare) => {

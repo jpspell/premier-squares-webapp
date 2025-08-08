@@ -1,5 +1,6 @@
 import { contestAPI } from './apiService';
 import { reportError } from '../utils/errorReporter';
+import { storeGameData, getGameData, storeAllGames, getAllGames, isDataStale } from '../utils/offlineStorage';
 
 // Service for fetching NFL game data from ESPN API
 export async function getNFLGameData(eventId) {
@@ -41,7 +42,7 @@ export async function getNFLGameData(eventId) {
     const period = event.status?.period || 0;
     const periodText = event.status?.type?.description || event.status?.type?.shortDetail || '';
     
-    return {
+    const gameData = {
       homeTeam: {
         name: homeTeamName,
         abbreviation: homeTeamAbbr,
@@ -61,8 +62,26 @@ export async function getNFLGameData(eventId) {
       eventId: eventId
     };
     
+    // Store successful response for offline use
+    await storeGameData(eventId, gameData);
+    
+    return gameData;
+    
   } catch (error) {
     reportError(error, 'network', { operation: 'getNFLGameData', eventId });
+    
+    // Try to get cached data if network request fails
+    const cachedData = await getGameData(eventId);
+    if (cachedData) {
+      // Add a flag to indicate this is cached data
+      const offlineData = {
+        ...cachedData,
+        _isOffline: true,
+        _cachedAt: Date.now()
+      };
+      return offlineData;
+    }
+    
     return null;
   }
 }
@@ -107,10 +126,26 @@ export async function getAllNFLGames() {
       };
     });
     
+    // Store successful response for offline use
+    await storeAllGames(games);
+    
     return games;
     
   } catch (error) {
     reportError(error, 'network', { operation: 'getAllNFLGames' });
+    
+    // Try to get cached data if network request fails
+    const cachedGames = await getAllGames();
+    if (cachedGames.length > 0) {
+      // Add a flag to indicate this is cached data
+      const offlineGames = cachedGames.map(game => ({
+        ...game,
+        _isOffline: true,
+        _cachedAt: Date.now()
+      }));
+      return offlineGames;
+    }
+    
     return [];
   }
 }

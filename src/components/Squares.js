@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import { getNFLGameData } from '../services/gameService';
 import { contestAPI } from '../services/apiService';
 import { reportError } from '../utils/errorReporter';
+import { useNetworkStatus } from '../hooks/useNetworkStatus';
+import NetworkStatus from './NetworkStatus';
 
 function Squares() {
   const { documentId } = useParams();
@@ -12,12 +14,21 @@ function Squares() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [contestStatus, setContestStatus] = useState(null);
+  const [isOffline, setIsOffline] = useState(false);
+  const [offlineData, setOfflineData] = useState(null);
+  const { isOnline, isOffline: networkOffline } = useNetworkStatus();
 
     // Fetch contest data and names
   useEffect(() => {
     const fetchContestData = async () => {
       try {
         const data = await contestAPI.getContest(documentId);
+        
+        // Check if this is offline data
+        if (data._isOffline) {
+          setIsOffline(true);
+          setOfflineData(data);
+        }
            
         // Store contest status for reference
         const status = data.contest?.status || data.status;
@@ -67,6 +78,12 @@ function Squares() {
         const data = await getNFLGameData(eventId);
         
         if (data) {
+          // Check if this is offline data
+          if (data._isOffline) {
+            setIsOffline(true);
+            setOfflineData(data);
+          }
+          
           // Transform the API data to match our expected format
           const transformedData = {
              homeTeam: {
@@ -107,11 +124,16 @@ function Squares() {
     fetchGameData(true);
 
     // Set up automatic refresh every 2 minutes without loading indicator
-    const intervalId = setInterval(() => fetchGameData(false), 120000);
+    // Only refresh if online
+    const intervalId = setInterval(() => {
+      if (isOnline) {
+        fetchGameData(false);
+      }
+    }, 120000);
 
     // Cleanup interval on component unmount
     return () => clearInterval(intervalId);
-  }, [eventId]);
+  }, [eventId, isOnline]);
 
   // Function to get the last digit of a number
   const getLastDigit = (num) => num % 10;
@@ -240,6 +262,20 @@ function Squares() {
 
   return (
     <div className="App">
+      <NetworkStatus />
+      {isOffline && (
+        <div className="offline-banner">
+          <div className="offline-message">
+            <span className="offline-icon">📡</span>
+            You're viewing cached data. Some features may be limited.
+            {offlineData && (
+              <span className="cache-time">
+                Cached: {new Date(offlineData._cachedAt).toLocaleTimeString()}
+              </span>
+            )}
+          </div>
+        </div>
+      )}
       <div className="grid-container">
         {/* Main grid area */}
         <div className="grid-area">
