@@ -1292,37 +1292,184 @@ body.no-scroll {
   }
 }
 
-/* Landscape orientation for mobile */
-@media (max-width: 768px) and (orientation: landscape) {
+/* Landscape orientation disabled - force portrait on mobile devices only */
+@media (orientation: landscape) and (max-width: 1024px) {
   html, body {
-    overflow: auto;
-    height: auto;
+    overflow: hidden !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    position: fixed !important;
+    width: 100% !important;
   }
   
   .App {
-    overflow: auto !important;
-    height: auto;
-    min-height: 100dvh;
+    overflow: hidden !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
   }
   
-  .App.no-scroll {
-    height: 100vh;
-    height: 100dvh;
-    overflow: hidden;
+  /* Hide all content in landscape on mobile */
+  .App > * {
+    display: none !important;
   }
   
+  /* Show landscape warning on mobile */
+  .App::before {
+    content: "Please rotate your device to portrait mode to use this app";
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--background-card);
+    color: var(--text-primary);
+    padding: 2rem;
+    border-radius: 1rem;
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 600;
+    z-index: 9999;
+    max-width: 80%;
+    border: 2px solid var(--primary-color);
+    box-shadow: var(--shadow-xl);
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .App::after {
+    content: "📱";
+    font-size: 3rem;
+    display: block !important;
+  }
+}
+
+/* Desktop landscape styles - allow landscape on desktop */
+@media (orientation: landscape) and (min-width: 1025px) {
   .home-container {
     height: 100vh;
-    height: 100dvh;
-    overflow: hidden;
+    padding: 2rem;
   }
   
+  .game-selector {
+    max-width: 1200px;
+    gap: 2.5rem;
+  }
+  
+  .input-row {
+    gap: 1.5rem;
+  }
+  
+  .dropdown-container {
+    max-width: 500px;
+  }
+  
+  .game-dropdown {
+    max-width: 500px;
+    font-size: 1.125rem;
+    padding: 1.25rem 1.75rem;
+    height: 64px;
+  }
+  
+  .cost-input-container {
+    min-width: 140px;
+  }
+  
+  .cost-input {
+    font-size: 1.25rem;
+    padding: 1.25rem 1.25rem 1.25rem 3rem;
+    height: 64px;
+  }
+  
+  .currency-symbol {
+    font-size: 1.25rem;
+    left: 1.25rem;
+  }
+  
+  .go-button {
+    min-width: 220px;
+    padding: 1.25rem 1.75rem;
+    font-size: 1.375rem;
+    height: 64px;
+  }
+  
+  .app-title {
+    font-size: 28px !important;
+  }
+  
+  .cost-label {
+    font-size: 1rem;
+  }
+  
+  .home-container h1 {
+    font-size: 3.5rem;
+  }
+  
+  .home-container p {
+    font-size: 1.375rem;
+  }
+  
+  /* Grid layout adjustments for desktop landscape */
   .grid-container {
-    min-height: 100dvh;
+    padding: 1.5rem;
+    gap: 1.5rem;
+  }
+  
+  .grid-area {
+    padding: 2rem;
   }
   
   .grid-wrapper {
-    min-height: 80dvh;
+    padding: 1.5rem;
+  }
+  
+  .away-team-sidebar {
+    width: 100px;
+    padding: 0.75rem;
+  }
+  
+  .home-team-header {
+    height: 100px;
+    padding: 0.75rem;
+  }
+  
+  .team-name {
+    font-size: 1.5rem;
+  }
+  
+  .score {
+    font-size: 1.5rem;
+  }
+  
+  .header-cell {
+    font-size: 1.125rem;
+  }
+  
+  .header-row {
+    grid-template-columns: 80px repeat(10, 1fr);
+    grid-template-rows: 80px;
+  }
+  
+  .grid-row {
+    grid-template-columns: 80px repeat(10, 1fr);
+  }
+  
+  .grid-item {
+    font-size: 1rem;
+    padding: 0.75rem;
+  }
+  
+  .grid-item .name {
+    font-size: 0.875rem;
+  }
+  
+  .grid-item .quarter-indicator {
+    font-size: 0.75rem;
   }
 }
 
