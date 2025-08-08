@@ -54,8 +54,8 @@ export const useNetworkStatus = () => {
       }
     };
 
-    // Test connection every 30 seconds
-    const intervalId = setInterval(testConnection, 30000);
+    // Test connection every 2 minutes
+    const intervalId = setInterval(testConnection, 120000);
 
     // Initial connection test
     testConnection();
