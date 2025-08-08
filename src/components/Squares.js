@@ -1,10 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { getNFLGameData } from '../services/gameService';
 import { contestAPI } from '../services/apiService';
+import { getNFLGameData } from '../services/gameService';
 import { reportError } from '../utils/errorReporter';
 import { useNetworkStatus } from '../hooks/useNetworkStatus';
 import NetworkStatus from './NetworkStatus';
+
+// HTML sanitization function to prevent XSS on user names
+const sanitizeHtml = (str) => {
+  if (typeof str !== 'string') return str;
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;');
+};
 
 function Squares() {
   const { documentId } = useParams();
@@ -328,7 +340,7 @@ function Squares() {
                           key={gridIndex} 
                           className={`grid-item ${squareInfo.isColored ? 'colored-square' : ''}`}
                         >
-                          <div className="name">{names[gridIndex] || `Name ${gridIndex}`}</div>
+                          <div className="name">{names[gridIndex] ? sanitizeHtml(names[gridIndex]) : `Name ${gridIndex}`}</div>
                           {squareInfo.isColored && (
                             <div className={`quarter-indicator ${squareInfo.hasOngoingQuarter ? 'ongoing' : 'final'}`}>
                               {squareInfo.quarterText}

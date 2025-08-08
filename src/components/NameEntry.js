@@ -4,6 +4,18 @@ import { validateNames, validateNamesForSave } from '../utils/validation';
 import { getErrorMessage } from '../utils/errorHandler';
 import { reportError } from '../utils/errorReporter';
 
+// HTML sanitization function to prevent XSS on user input
+const sanitizeInput = (str) => {
+  if (typeof str !== 'string') return str;
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;');
+};
+
 function NameEntry({ contestId, onNamesSubmitted }) {
   const [names, setNames] = useState(Array(100).fill(''));
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -61,7 +73,7 @@ function NameEntry({ contestId, onNamesSubmitted }) {
 
   const handleNameChange = (index, value) => {
     const newNames = [...names];
-    newNames[index] = value;
+    newNames[index] = sanitizeInput(value);
     setNames(newNames);
     
     // Check if any names have been entered (changed from empty)
