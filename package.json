@@ -12,7 +12,9 @@
     "start": "set NODE_ENV=development&& react-scripts start",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "build": "set NODE_ENV=production&& set REACT_APP_API_URL=https://z414f9tg84.execute-api.us-east-1.amazonaws.com/prod&& react-scripts build"
+    "build": "set NODE_ENV=production&& set REACT_APP_API_URL=https://z414f9tg84.execute-api.us-east-1.amazonaws.com/prod&& react-scripts build",
+    "build:https": "set NODE_ENV=production&& set REACT_APP_API_URL=https://z414f9tg84.execute-api.us-east-1.amazonaws.com/prod&& set HTTPS=true&& react-scripts build",
+    "serve:https": "set HTTPS=true&& set SSL_CRT_FILE=localhost.pem&& set SSL_KEY_FILE=localhost-key.pem&& react-scripts start"
   },
   "eslintConfig": {
     "extends": [

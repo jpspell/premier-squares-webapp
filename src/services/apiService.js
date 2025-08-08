@@ -1,6 +1,7 @@
 // API Service Layer - Centralized API calls
 import config from '../config/config';
 import { handleAsyncOperation, categorizeError, getErrorMessage } from '../utils/errorHandler';
+import { secureFetch } from '../utils/securityUtils';
 
 const API_BASE_URL = config.API_BASE_URL;
 
@@ -9,7 +10,7 @@ export const contestAPI = {
   // Get contest by ID
   getContest: async (contestId) => {
     return handleAsyncOperation(async () => {
-      const response = await fetch(`${API_BASE_URL}/contests/${contestId}`);
+      const response = await secureFetch(`${API_BASE_URL}/contests/${contestId}`);
       if (!response.ok) {
         const error = new Error(`HTTP error! status: ${response.status}`);
         error.status = response.status;
@@ -22,11 +23,8 @@ export const contestAPI = {
   // Create new contest
   createContest: async (eventId, costPerSquare) => {
     return handleAsyncOperation(async () => {
-      const response = await fetch(`${API_BASE_URL}/contests`, {
+      const response = await secureFetch(`${API_BASE_URL}/contests`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           eventId,
           costPerSquare
@@ -46,11 +44,8 @@ export const contestAPI = {
   // Update contest names
   updateContest: async (contestId, names) => {
     return handleAsyncOperation(async () => {
-      const response = await fetch(`${API_BASE_URL}/contests/${contestId}`, {
+      const response = await secureFetch(`${API_BASE_URL}/contests/${contestId}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({ names })
       });
 
@@ -67,11 +62,8 @@ export const contestAPI = {
   // Start contest
   startContest: async (contestId) => {
     return handleAsyncOperation(async () => {
-      const response = await fetch(`${API_BASE_URL}/contests/${contestId}/start`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        }
+      const response = await secureFetch(`${API_BASE_URL}/contests/${contestId}/start`, {
+        method: 'POST'
       });
 
       if (!response.ok) {

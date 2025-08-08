@@ -6,6 +6,7 @@ import Squares from './components/Squares';
 import GameSelector from './components/GameSelector';
 import NameEntry from './components/NameEntry';
 import ErrorBoundary from './components/ErrorBoundary';
+import ServiceWorkerRegistration from './components/ServiceWorkerRegistration';
 
 // Contest route component that gets the documentId from URL params
 function ContestPage() {
@@ -107,6 +108,7 @@ function ScrollPreventer() {
 function App() {
   return (
     <ErrorBoundary>
+      <ServiceWorkerRegistration />
       <Router>
         <ScrollPreventer />
         <Routes>
