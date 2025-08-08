@@ -136,16 +136,13 @@ function Squares() {
     fetchGameData(true);
 
     // Set up automatic refresh every 2 minutes without loading indicator
-    // Only refresh if online
     const intervalId = setInterval(() => {
-      if (isOnline) {
-        fetchGameData(false);
-      }
+      fetchGameData(false);
     }, 120000);
 
     // Cleanup interval on component unmount
     return () => clearInterval(intervalId);
-  }, [eventId, isOnline]);
+  }, [eventId]);
 
   // Function to get the last digit of a number
   const getLastDigit = (num) => num % 10;
