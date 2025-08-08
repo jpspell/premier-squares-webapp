@@ -698,10 +698,10 @@ body.no-scroll {
 
 /* Colored Square */
 .colored-square {
-  background: var(--gradient-success) !important;
+  background: var(--gradient-primary) !important;
   color: var(--text-primary) !important;
   font-weight: 700 !important;
-  border-color: var(--secondary-color) !important;
+  border-color: var(--primary-color) !important;
   box-shadow: var(--shadow-lg);
   transform: scale(1.02);
 }
@@ -715,6 +715,18 @@ body.no-scroll {
   background: var(--gradient-success);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Ongoing quarter - keep current gradient */
+.quarter-indicator.ongoing {
+  background: var(--gradient-primary);
+  border: 1px solid var(--primary-color);
+}
+
+/* Final quarter - same as ongoing */
+.quarter-indicator.final {
+  background: var(--gradient-primary);
+  border: 1px solid var(--primary-color);
 }
 
 /* Game Status - moved to grid area */

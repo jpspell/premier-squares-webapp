@@ -1,6 +1,7 @@
 // API Service Layer - Centralized API calls
+import config from '../config/config';
 
-const API_BASE_URL = 'http://18.212.37.198:3001';
+const API_BASE_URL = config.API_BASE_URL;
 
 // Contest API calls
 export const contestAPI = {

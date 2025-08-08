@@ -144,9 +144,20 @@ function Squares() {
     return { home: homeTotal, away: awayTotal };
   };
 
+  // Function to determine if a quarter is final (completed)
+  const isQuarterFinal = (quarter) => {
+    // A quarter is final if the current period has moved beyond it
+    // OR if the game has ended
+    return gameData.currentPeriod > quarter || 
+           gameData.gameStatus === 'final' || 
+           gameData.gameStatus === 'complete';
+  };
+
   // Function to determine if a square should be colored and which quarters it won
   const getSquareInfo = (homeDigit, awayDigit) => {
     const winningQuarters = [];
+    const finalQuarters = [];
+    const ongoingQuarters = [];
     
     // Check each period to see if this square should be colored
     for (let period = 1; period <= gameData.currentPeriod; period++) {
@@ -157,6 +168,13 @@ function Squares() {
       // If this square matches the last digits for this period, add it to winning quarters
       if (homeLastDigit === homeDigit && awayLastDigit === awayDigit) {
         winningQuarters.push(period);
+        
+        // Categorize as final or ongoing
+        if (isQuarterFinal(period)) {
+          finalQuarters.push(period);
+        } else {
+          ongoingQuarters.push(period);
+        }
       }
     }
     
@@ -164,11 +182,14 @@ function Squares() {
       return { 
         isColored: true, 
         quarters: winningQuarters,
-        quarterText: winningQuarters.map(q => `Q${q}`).join(',')
+        finalQuarters: finalQuarters,
+        ongoingQuarters: ongoingQuarters,
+        quarterText: winningQuarters.map(q => `Q${q}`).join(','),
+        hasOngoingQuarter: ongoingQuarters.length > 0
       };
     }
     
-    return { isColored: false, quarters: [], quarterText: null };
+    return { isColored: false, quarters: [], finalQuarters: [], ongoingQuarters: [], quarterText: null, hasOngoingQuarter: false };
   };
 
 
@@ -272,7 +293,9 @@ function Squares() {
                         >
                           <div className="name">{names[gridIndex] || `Name ${gridIndex}`}</div>
                           {squareInfo.isColored && (
-                            <div className="quarter-indicator">{squareInfo.quarterText}</div>
+                            <div className={`quarter-indicator ${squareInfo.hasOngoingQuarter ? 'ongoing' : 'final'}`}>
+                              {squareInfo.quarterText}
+                            </div>
                           )}
                         </div>
                       );
