@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom';
 import { contestAPI } from '../services/apiService';
 import { getNFLGameData } from '../services/gameService';
 import { reportError } from '../utils/errorReporter';
-import { useNetworkStatus } from '../hooks/useNetworkStatus';
 import NetworkStatus from './NetworkStatus';
 
 // HTML sanitization function to prevent XSS on user names
@@ -28,7 +27,7 @@ function Squares() {
   const [contestStatus, setContestStatus] = useState(null);
   const [isOffline, setIsOffline] = useState(false);
   const [offlineData, setOfflineData] = useState(null);
-  const { isOnline } = useNetworkStatus();
+
 
     // Fetch contest data and names
   useEffect(() => {
