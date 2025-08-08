@@ -1,4 +1,5 @@
 // Security utilities for HTTPS enforcement and security checks
+import { SECURITY_CONFIG, securityUtils } from '../config/security';
 
 /**
  * Check if the current environment requires HTTPS
@@ -122,6 +123,77 @@ export const fixMixedContent = () => {
 };
 
 /**
+ * Validate external URLs against allowed domains
+ * @param {string} url - The URL to validate
+ * @returns {boolean} True if URL is allowed
+ */
+export const validateExternalUrl = (url) => {
+  return securityUtils.isValidExternalUrl(url);
+};
+
+/**
+ * Sanitize user input to prevent XSS
+ * @param {string} input - The input to sanitize
+ * @returns {string} Sanitized input
+ */
+export const sanitizeInput = (input) => {
+  return securityUtils.sanitizeHtml(input);
+};
+
+/**
+ * Validate input against security patterns
+ * @param {string} input - The input to validate
+ * @param {string} type - The type of validation (eventId, email, phone)
+ * @returns {boolean} True if input is valid
+ */
+export const validateInput = (input, type) => {
+  const pattern = SECURITY_CONFIG.VALIDATION_PATTERNS[type];
+  const maxLength = SECURITY_CONFIG.MAX_LENGTHS[type];
+  
+  if (!pattern) {
+    console.warn(`No validation pattern found for type: ${type}`);
+    return false;
+  }
+  
+  return securityUtils.validateInput(input, pattern, maxLength);
+};
+
+/**
+ * Check for CSP violations in console
+ * @returns {Array} Array of CSP violations
+ */
+export const checkCSPViolations = () => {
+  const violations = [];
+  
+  if (typeof window !== 'undefined' && window.console) {
+    const originalError = console.error;
+    console.error = (...args) => {
+      const message = args.join(' ');
+      if (message.includes('Content Security Policy') || 
+          message.includes('CSP') ||
+          message.includes('Refused to load')) {
+        violations.push({
+          message,
+          timestamp: new Date().toISOString(),
+          stack: new Error().stack
+        });
+      }
+      originalError.apply(console, args);
+    };
+  }
+  
+  return violations;
+};
+
+/**
+ * Generate a secure nonce for CSP
+ * @returns {string} A secure nonce
+ */
+export const generateNonce = () => {
+  return securityUtils.generateNonce();
+};
+
+/**
  * Initialize security features
  */
 export const initializeSecurity = () => {
@@ -141,5 +213,11 @@ export const initializeSecurity = () => {
       childList: true,
       subtree: true
     });
+    
+    // Monitor CSP violations
+    checkCSPViolations();
   }
 };
+
+// Export security configuration for use in components
+export { SECURITY_CONFIG, securityUtils };

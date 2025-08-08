@@ -109,7 +109,7 @@ function App() {
   return (
     <ErrorBoundary>
       <ServiceWorkerRegistration />
-      <Router>
+      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <ScrollPreventer />
         <Routes>
           <Route path="/" element={
@@ -118,13 +118,13 @@ function App() {
             </div>
           } />
           <Route path="/contests/:documentId" element={<ContestPage />} />
-                  <Route path="/contests/:documentId/squares" element={
-          <div className="App no-scroll squares-page">
-            <ErrorBoundary>
-              <Squares />
-            </ErrorBoundary>
-          </div>
-        } />
+          <Route path="/contests/:documentId/squares" element={
+            <div className="App no-scroll squares-page">
+              <ErrorBoundary>
+                <Squares />
+              </ErrorBoundary>
+            </div>
+          } />
         </Routes>
       </Router>
     </ErrorBoundary>

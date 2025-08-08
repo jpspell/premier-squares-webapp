@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.1",
+    "helmet": "^7.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.20.1",
@@ -10,11 +13,15 @@
   },
   "scripts": {
     "start": "set NODE_ENV=development&& react-scripts start",
+    "start:secure": "npm run build && node server.js",
+    "dev:secure": "concurrently \"npm run start\" \"wait-on http://localhost:3000 && node server.js\"",
     "test": "react-scripts test",
+    "test:security": "node test-security.js",
     "eject": "react-scripts eject",
     "build": "set NODE_ENV=production&& set REACT_APP_API_URL=https://z414f9tg84.execute-api.us-east-1.amazonaws.com/prod&& react-scripts build",
     "build:https": "set NODE_ENV=production&& set REACT_APP_API_URL=https://z414f9tg84.execute-api.us-east-1.amazonaws.com/prod&& set HTTPS=true&& react-scripts build",
-    "serve:https": "set HTTPS=true&& set SSL_CRT_FILE=localhost.pem&& set SSL_KEY_FILE=localhost-key.pem&& react-scripts start"
+    "serve:https": "set HTTPS=true&& set SSL_CRT_FILE=localhost.pem&& set SSL_KEY_FILE=localhost-key.pem&& react-scripts start",
+    "serve:secure": "npm run build && node server.js"
   },
   "eslintConfig": {
     "extends": [
@@ -36,6 +43,8 @@
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.4",
-    "@testing-library/react": "^16.3.0"
+    "@testing-library/react": "^16.3.0",
+    "concurrently": "^8.2.2",
+    "wait-on": "^7.2.0"
   }
 }
