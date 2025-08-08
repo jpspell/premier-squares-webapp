@@ -1,6 +1,6 @@
 import { contestAPI } from './apiService';
 import { reportError } from '../utils/errorReporter';
-import { storeGameData, getGameData, storeAllGames, getAllGames, isDataStale } from '../utils/offlineStorage';
+import { storeGameData, getGameData, storeAllGames, getAllGames } from '../utils/offlineStorage';
 
 // Service for fetching NFL game data from ESPN API
 export async function getNFLGameData(eventId) {

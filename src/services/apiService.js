@@ -2,7 +2,7 @@
 import config from '../config/config';
 import { handleAsyncOperation, getErrorMessage } from '../utils/errorHandler';
 import { secureFetch } from '../utils/securityUtils';
-import { storeContestData, getContestData, isDataStale } from '../utils/offlineStorage';
+import { storeContestData, getContestData } from '../utils/offlineStorage';
 import { createRetryableOperation } from '../utils/retryUtils';
 
 const API_BASE_URL = config.API_BASE_URL;

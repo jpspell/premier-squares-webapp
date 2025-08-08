@@ -16,7 +16,7 @@ function Squares() {
   const [contestStatus, setContestStatus] = useState(null);
   const [isOffline, setIsOffline] = useState(false);
   const [offlineData, setOfflineData] = useState(null);
-  const { isOnline, isOffline: networkOffline } = useNetworkStatus();
+  const { isOnline } = useNetworkStatus();
 
     // Fetch contest data and names
   useEffect(() => {

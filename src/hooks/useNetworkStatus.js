@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import config from '../config/config';
 
 export const useNetworkStatus = () => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -33,7 +34,7 @@ export const useNetworkStatus = () => {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-        const response = await fetch('/api/health', {
+        const response = await fetch(`${config.API_BASE_URL}/health`, {
           method: 'HEAD',
           signal: controller.signal
         });
