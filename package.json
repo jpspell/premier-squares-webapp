@@ -10,9 +10,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "build": "set REACT_APP_API_URL=https://z414f9tg84.execute-api.us-east-1.amazonaws.com/prod&& react-scripts build"
   },
   "eslintConfig": {
     "extends": [
