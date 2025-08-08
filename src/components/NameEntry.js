@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { contestAPI } from '../services/apiService';
+import { validateNames, validateNamesForSave, validateName } from '../utils/validation';
 
 function NameEntry({ contestId, onNamesSubmitted }) {
   const [names, setNames] = useState(Array(100).fill(''));
@@ -77,16 +78,16 @@ function NameEntry({ contestId, onNamesSubmitted }) {
 
   const saveNames = async () => {
     try {
-      // Filter out empty names
-      const validNames = names.filter(name => name.trim() !== '');
+      // Use validation function that allows partial names for saving
+      const validation = validateNamesForSave(names);
       
-      if (validNames.length === 0) {
-        setError('Please enter at least one name');
+      if (!validation.isValid) {
+        setError(validation.message);
         return;
       }
 
       // Save names to backend using API service
-      await contestAPI.updateContest(contestId, validNames);
+      await contestAPI.updateContest(contestId, validation.value);
 
       setShowToast(true);
       setHasChanges(false); // Reset changes flag after successful save
@@ -101,17 +102,17 @@ function NameEntry({ contestId, onNamesSubmitted }) {
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
-      // Filter out empty names
-      const validNames = names.filter(name => name.trim() !== '');
+      // Use new validation function
+      const validation = validateNames(names);
       
-      if (validNames.length !== 100) {
-        setError('Please enter exactly 100 names');
+      if (!validation.isValid) {
+        setError(validation.message);
         setIsSubmitting(false);
         return;
       }
 
       // Save names to backend using API service
-      await contestAPI.updateContest(contestId, validNames);
+      await contestAPI.updateContest(contestId, validation.value);
 
       // Call the start endpoint to start the contest
       await contestAPI.startContest(contestId);
@@ -203,7 +204,7 @@ function NameEntry({ contestId, onNamesSubmitted }) {
                  onChange={(e) => handleNameChange(index, e.target.value)}
                  className={`name-input ${!isFieldEnabled(index) ? 'disabled' : ''}`}
                  placeholder={`Name ${index + 1}`}
-                 maxLength="50"
+                 maxLength="100"
                  disabled={!isFieldEnabled(index)}
                />
              </div>

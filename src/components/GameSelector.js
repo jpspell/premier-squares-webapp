@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getAllNFLGames, createSquaresGame } from '../services/gameService';
+import { validateEventId, validateCostPerSquare } from '../utils/validation';
 
 function GameSelector({ onGameSelect }) {
   const [games, setGames] = useState([]);
@@ -36,25 +37,37 @@ function GameSelector({ onGameSelect }) {
   };
 
   const handleGoClick = async () => {
-    if (selectedEventId) {
-      try {
-        const result = await createSquaresGame(selectedEventId, costPerSquare);
-        
-        // Extract the contest ID from the response
-        const contestId = result.id || result._id || result.contestId || result.documentId;
-        
-        if (!contestId) {
-          setError('Failed to create contest. Please try again.');
-          return;
-        }
-        
-        // Call the parent callback with the result and contest ID
-        if (onGameSelect) {
-          onGameSelect(selectedEventId, costPerSquare, contestId);
-        }
-      } catch (error) {
+    // Validate event ID
+    const eventValidation = validateEventId(selectedEventId);
+    if (!eventValidation.isValid) {
+      setError(eventValidation.message);
+      return;
+    }
+
+    // Validate cost per square
+    const costValidation = validateCostPerSquare(costPerSquare);
+    if (!costValidation.isValid) {
+      setError(costValidation.message);
+      return;
+    }
+
+    try {
+      const result = await createSquaresGame(eventValidation.value, costValidation.value);
+      
+      // Extract the contest ID from the response
+      const contestId = result.id || result._id || result.contestId || result.documentId;
+      
+      if (!contestId) {
         setError('Failed to create contest. Please try again.');
+        return;
       }
+      
+      // Call the parent callback with the result and contest ID
+      if (onGameSelect) {
+        onGameSelect(eventValidation.value, costValidation.value, contestId);
+      }
+    } catch (error) {
+      setError('Failed to create contest. Please try again.');
     }
   };
 
@@ -108,7 +121,7 @@ function GameSelector({ onGameSelect }) {
                 value={costPerSquare}
                 onChange={handleSquareCostChange}
                 min="1"
-                max="1000"
+                max="10000"
                 className="cost-input"
                 placeholder="10"
               />

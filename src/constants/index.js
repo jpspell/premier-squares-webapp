@@ -14,7 +14,7 @@ export const CONTEST_STATUS = {
 // Default Values
 export const DEFAULT_COST_PER_SQUARE = 10;
 export const MIN_COST_PER_SQUARE = 1;
-export const MAX_COST_PER_SQUARE = 1000;
+export const MAX_COST_PER_SQUARE = 10000; // Updated to match backend
 
 // API Endpoints
 export const API_ENDPOINTS = {
@@ -49,5 +49,5 @@ export const UI_CONFIG = {
   TOAST_DURATION: 3000,
   COPY_FEEDBACK_DURATION: 2000,
   GAME_REFRESH_INTERVAL: 120000, // 2 minutes
-  MAX_NAME_LENGTH: 50
+  MAX_NAME_LENGTH: 100 // Updated to match backend validation
 };
