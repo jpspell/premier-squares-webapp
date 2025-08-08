@@ -15,7 +15,15 @@ function GameSelector({ onGameSelect }) {
       try {
         setLoading(true);
         const gamesData = await getAllNFLGames();
-        setGames(gamesData);
+        
+        // Filter out games that have already started
+        // Only show games with status "Scheduled" 
+        const upcomingGames = gamesData.filter(game => {
+          const status = game.status || '';
+          return status.toLowerCase() === 'scheduled';
+        });
+        
+        setGames(upcomingGames);
       } catch (err) {
         setError('Failed to fetch games');
         reportError(err, 'network', { operation: 'fetchGames' });
