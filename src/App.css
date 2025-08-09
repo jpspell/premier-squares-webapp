@@ -1607,6 +1607,8 @@ body.no-scroll {
   
   .home-container {
     padding: 1rem;
+    justify-content: flex-start;
+    padding-top: 2rem;
   }
   
   .game-selector {
