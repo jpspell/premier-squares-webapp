@@ -199,6 +199,7 @@ export const validateContestId = (contestId) => {
   return { isValid: true, message: '', value: sanitizedContestId };
 };
 
+
 // Legacy validation functions (keeping for backward compatibility)
 export const isValidContestId = (contestId) => {
   const result = validateContestId(contestId);

@@ -447,29 +447,157 @@ body.no-scroll {
   -webkit-text-fill-color: transparent;
   background-clip: text;
   line-height: 1.2;
-  white-space: nowrap;
 }
 
 .input-row {
   display: flex;
-  align-items: flex-end;
-  gap: 1rem;
   width: 100%;
-  justify-content: center;
+  max-width: 800px;
+  gap: 1rem;
+  align-items: flex-end;
 }
 
 .left-column {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px !important;
+  flex: 1;
+  min-width: 0;
 }
 
 .right-column {
+  width: 140px;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.25rem;
+}
+
+/* New full-width game selection row */
+.game-selection-row {
+  display: flex;
+  width: 100%;
+  max-width: 800px;
+  gap: 0.5rem;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+  justify-content: space-between;
+}
+
+.game-title-section {
+  flex: 1;
+  margin-right: 1rem;
+}
+
+.game-title-section .app-title {
+  font-size: 24px !important;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 8px 0 !important;
+  text-align: left;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2;
+}
+
+.game-dropdown-full {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: var(--background-card);
+  border: 2px solid var(--border-color);
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+  height: 56px;
+  box-sizing: border-box;
+}
+
+.game-dropdown-full:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.game-dropdown-full:hover {
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-md);
+}
+
+.cost-section {
+  width: 140px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.cost-section .cost-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin: 0;
+  text-align: right;
+}
+
+.cost-section .cost-input-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.cost-section .cost-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.cost-section .currency-symbol {
+  position: absolute;
+  left: 1rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.cost-section .cost-input {
+  width: 100%;
+  padding: 1rem 1rem 1rem 2.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--background-card);
+  border: 2px solid var(--border-color);
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+  text-align: center;
+  height: 56px;
+  box-sizing: border-box;
+}
+
+.cost-section .cost-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.cost-section .cost-input:hover {
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-md);
 }
 
 .labels-row {
@@ -494,16 +622,13 @@ body.no-scroll {
 }
 
 .dropdown-container {
-  flex: 1;
-  max-width: 400px;
-  display: flex;
-  justify-content: center;
-  margin: 0;
+  width: 100%;
+  margin-top: 8px;
 }
 
 .game-dropdown {
   width: 100%;
-  max-width: 400px;
+  display: block;
   padding: 1rem 1.5rem;
   font-size: 1rem;
   font-weight: 500;
@@ -516,6 +641,7 @@ body.no-scroll {
   appearance: none;
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
   background-position: right 0.75rem center;
+  box-sizing: border-box;
   background-repeat: no-repeat;
   background-size: 1.5em 1.5em;
   padding-right: 2.5rem;
@@ -637,6 +763,7 @@ body.no-scroll {
 
 .cost-input[type=number] {
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 /* Loading and Error States */
@@ -1038,6 +1165,252 @@ body.no-scroll {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
+/* Payout Configuration Styles */
+.payout-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 800px;
+  padding: 1.5rem;
+  background: var(--background-card);
+  border: 2px solid var(--border-color);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-lg);
+}
+
+.payout-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-align: center;
+  margin: 0;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.payout-mode-selector {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  padding: 0.5rem;
+  background: var(--background-light);
+  border-radius: 0.75rem;
+  border: 1px solid var(--border-color);
+}
+
+.payout-mode-btn {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.payout-mode-btn:hover {
+  color: var(--text-primary);
+  background: var(--background-card);
+  border-color: var(--border-color);
+}
+
+.payout-mode-btn.active {
+  color: var(--text-primary);
+  background: var(--gradient-primary);
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-md);
+}
+
+.payout-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.total-pot {
+  text-align: center;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  padding: 0.75rem;
+  background: var(--background-light);
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+}
+
+.pot-amount {
+  color: var(--accent-color);
+  font-weight: 700;
+  font-size: 1.25rem;
+  background: var(--gradient-success);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.custom-payout-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.payout-total-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: var(--background-light);
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+  font-weight: 600;
+}
+
+.total-label {
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.total-percentage {
+  color: var(--primary-color);
+  font-size: 1.25rem;
+  font-weight: 700;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.total-percentage.over-limit {
+  color: #ef4444;
+  background: linear-gradient(90deg, #ef4444, #dc2626);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.remaining-amount {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.quarter-sliders {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+.quarter-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: var(--background-light);
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+}
+
+.quarter-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+}
+
+.quarter-percentage {
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
+.quarter-amount {
+  color: var(--accent-color);
+  font-weight: 700;
+}
+
+.payout-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--background-dark);
+  outline: none;
+  cursor: pointer;
+}
+
+.payout-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  border: 2px solid var(--primary-color);
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: all 0.2s ease;
+}
+
+.payout-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: var(--shadow-lg);
+}
+
+.payout-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  border: 2px solid var(--primary-color);
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: all 0.2s ease;
+}
+
+.standard-payout-display {
+  display: flex;
+  justify-content: center;
+}
+
+.quarter-payouts {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  width: 100%;
+  max-width: 500px;
+}
+
+.quarter-payout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  background: var(--background-light);
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+}
+
+.quarter-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+}
+
+.quarter-payout .quarter-amount {
+  color: var(--accent-color);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
 /* Mobile Responsive Design */
 @media (max-width: 1024px) {
   .nav-container {
@@ -1284,6 +1657,93 @@ body.no-scroll {
     max-width: 80px;
   }
   
+  .game-selection-row {
+    gap: 0.75rem;
+  }
+  
+  .game-title-section {
+    margin-right: 0.5rem;
+  }
+  
+  .cost-section {
+    width: 120px;
+    flex-shrink: 0;
+  }
+  
+  .cost-section .cost-label {
+    font-size: 0.75rem;
+    text-align: right;
+  }
+  
+  .cost-section .cost-input {
+    padding: 0.75rem 0.5rem 0.75rem 1.75rem;
+    font-size: 0.875rem;
+  }
+  
+  .cost-section .currency-symbol {
+    font-size: 0.875rem;
+    left: 0.5rem;
+  }
+  
+  .payout-section {
+    padding: 0.75rem;
+    gap: 0.75rem;
+  }
+  
+  .payout-preview {
+    gap: 1rem;
+  }
+  
+  .payout-title {
+    font-size: 1.125rem;
+  }
+  
+  .quarter-sliders {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+  
+  .quarter-slider {
+    padding: 0.5rem;
+  }
+  
+  .quarter-label {
+    font-size: 0.75rem;
+    gap: 0.25rem;
+  }
+  
+  .total-pot {
+    font-size: 0.875rem;
+    padding: 0.5rem;
+  }
+  
+  .pot-amount {
+    font-size: 1rem;
+  }
+  
+  .payout-total-display {
+    padding: 0.5rem;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+  }
+
+  .total-label {
+    font-size: 0.75rem;
+  }
+  
+  .total-percentage {
+    font-size: 1rem;
+  }
+  
+  .remaining-amount {
+    font-size: 0.625rem;
+  }
+  
+  .payout-mode-btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+  
   .home-container h1 {
     font-size: 2rem;
   }
@@ -1427,6 +1887,130 @@ body.no-scroll {
   .currency-symbol {
     font-size: 0.75rem;
     left: 0.625rem;
+  }
+  
+  .game-selection-row {
+    gap: 0.5rem;
+  }
+  
+  .game-title-section {
+    margin-right: 0.25rem;
+  }
+  
+  .game-title-section .app-title {
+    font-size: 18px !important;
+    margin-bottom: 4px !important;
+  }
+  
+  .game-dropdown-full {
+    padding: 0.625rem 0.75rem;
+    padding-right: 1.75rem;
+    font-size: 0.75rem;
+    height: 48px;
+  }
+  
+  .cost-section {
+    width: 100px;
+    flex-shrink: 0;
+  }
+  
+  .cost-section .cost-label {
+    font-size: 0.625rem;
+    text-align: right;
+  }
+  
+  .cost-section .cost-input {
+    padding: 0.625rem 0.375rem 0.625rem 1.5rem;
+    font-size: 0.75rem;
+    height: 48px;
+  }
+  
+  .cost-section .currency-symbol {
+    font-size: 0.75rem;
+    left: 0.375rem;
+  }
+  
+  .payout-section {
+    padding: 0.5rem;
+    gap: 0.5rem;
+  }
+  
+  .payout-preview {
+    gap: 1rem;
+  }
+  
+  .payout-title {
+    font-size: 1rem;
+  }
+  
+  .quarter-sliders {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .quarter-slider {
+    padding: 0.375rem;
+  }
+  
+  .quarter-label {
+    font-size: 0.675rem;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 0.125rem;
+  }
+  
+  .quarter-label span {
+    font-size: 0.625rem;
+  }
+  
+  .payout-mode-btn {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+  }
+  
+  .total-pot {
+    font-size: 0.75rem;
+    padding: 0.375rem;
+  }
+  
+  .pot-amount {
+    font-size: 0.875rem;
+  }
+  
+  .quarter-payouts {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .quarter-payout {
+    padding: 0.5rem 0.25rem;
+  }
+  
+  .quarter-name {
+    font-size: 0.625rem;
+  }
+  
+  .quarter-payout .quarter-amount {
+    font-size: 0.75rem;
+  }
+  
+  .payout-total-display {
+    padding: 0.375rem;
+    gap: 0.125rem;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .total-label {
+    font-size: 0.625rem;
+  }
+  
+  .total-percentage {
+    font-size: 0.875rem;
+  }
+  
+  .remaining-amount {
+    font-size: 0.5rem;
   }
   
   .go-button {
@@ -1978,7 +2562,4 @@ body.no-scroll {
     font-size: 0.875rem;
   }
 }
-
-
-
 

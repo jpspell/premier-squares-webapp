@@ -9,6 +9,14 @@ function GameSelector({ onGameSelect }) {
   const [error, setError] = useState(null);
   const [selectedEventId, setSelectedEventId] = useState('');
   const [costPerSquare, setCostPerSquare] = useState(10);
+  const [costInputValue, setCostInputValue] = useState('10');
+  const [payoutMode, setPayoutMode] = useState('standard'); // 'standard' or 'custom'
+  const [customPayouts, setCustomPayouts] = useState({
+    quarter1: 25,
+    quarter2: 25,
+    quarter3: 25,
+    quarter4: 25
+  });
 
   useEffect(() => {
     async function fetchGames() {
@@ -41,8 +49,60 @@ function GameSelector({ onGameSelect }) {
   };
 
   const handleSquareCostChange = (event) => {
-    const value = parseInt(event.target.value) || 0;
-    setCostPerSquare(value);
+    const inputValue = event.target.value;
+    
+    // Only allow digits (no decimals, no negative signs, no letters)
+    const numbersOnlyRegex = /^\d*$/;
+    
+    if (!numbersOnlyRegex.test(inputValue)) {
+      // If input contains invalid characters, don't update anything
+      return;
+    }
+    
+    // Update the display value
+    setCostInputValue(inputValue);
+    
+    // If input is empty, set cost to 0
+    if (!inputValue || inputValue.trim() === '') {
+      setCostPerSquare(0);
+      return;
+    }
+    
+    // Parse the value (we know it's valid digits only)
+    const numericValue = parseInt(inputValue, 10);
+    setCostPerSquare(numericValue);
+  };
+
+  const handlePayoutModeChange = (mode) => {
+    setPayoutMode(mode);
+    if (mode === 'standard') {
+      // Reset to equal distribution
+      setCustomPayouts({
+        quarter1: 25,
+        quarter2: 25,
+        quarter3: 25,
+        quarter4: 25
+      });
+    }
+  };
+
+  const handleCustomPayoutChange = (quarter, value) => {
+    const newPayouts = { ...customPayouts };
+    newPayouts[quarter] = value;
+    setCustomPayouts(newPayouts);
+  };
+
+  const getTotalPercentage = () => {
+    return Object.values(customPayouts).reduce((sum, value) => sum + value, 0);
+  };
+
+  const getTotalPot = () => {
+    return costPerSquare * 100;
+  };
+  
+  const getQuarterPayout = (quarter) => {
+    const percentage = payoutMode === 'standard' ? 25 : customPayouts[quarter];
+    return Math.round((getTotalPot() * percentage) / 100);
   };
 
   const handleGoClick = async () => {
@@ -60,8 +120,18 @@ function GameSelector({ onGameSelect }) {
       return;
     }
 
+    // Calculate quarter prizes
+    const quarterPrizes = {
+      quarter1: getQuarterPayout('quarter1'),
+      quarter2: getQuarterPayout('quarter2'),
+      quarter3: getQuarterPayout('quarter3'),
+      quarter4: getQuarterPayout('quarter4'),
+      totalPot: getTotalPot(),
+      payoutMode: payoutMode
+    };
+
     try {
-      const result = await createSquaresGame(eventValidation.value, costValidation.value);
+      const result = await createSquaresGame(eventValidation.value, costValidation.value, quarterPrizes);
       
       // Extract the contest ID from the response
       const contestId = result.id || result._id || result.contestId || result.documentId;
@@ -99,48 +169,125 @@ function GameSelector({ onGameSelect }) {
 
   return (
     <div className="game-selector">
-      <div className="input-row">
-        <div className="left-column">
+      <div className="game-selection-row">
+        <div className="game-title-section">
           <h1 className="app-title">Premier Squares</h1>
-          <div className="dropdown-container">
-            <select 
-              value={selectedEventId} 
-              onChange={handleGameChange}
-              className="game-dropdown"
-            >
-              <option value="">Select a game...</option>
-              {games.map(game => (
-                <option key={game.id} value={game.id}>
-                  {game.awayTeam} @ {game.homeTeam} - {game.estTime}
-                </option>
-              ))}
-            </select>
-          </div>
+          <select 
+            value={selectedEventId} 
+            onChange={handleGameChange}
+            className="game-dropdown-full"
+          >
+            <option value="">Select a game...</option>
+            {games.map(game => (
+              <option key={game.id} value={game.id}>
+                {game.awayTeam} @ {game.homeTeam} - {game.estTime}
+              </option>
+            ))}
+          </select>
         </div>
-        <div className="right-column">
+        <div className="cost-section">
           <label htmlFor="squareCost" className="cost-label">
             Cost per square
           </label>
           <div className="cost-input-container">
             <div className="cost-input-wrapper">
               <span className="currency-symbol">$</span>
-              <input
-                type="number"
-                id="squareCost"
-                value={costPerSquare}
-                onChange={handleSquareCostChange}
-                min="1"
-                max="10000"
-                className="cost-input"
-                placeholder="10"
-              />
+                              <input
+                  type="number"
+                  id="squareCost"
+                  value={costInputValue}
+                  onChange={handleSquareCostChange}
+                  min="1"
+                  max="10000"
+                  className="cost-input"
+                  placeholder="10"
+                />
             </div>
           </div>
         </div>
       </div>
+      
+      {/* Payout Configuration Section */}
+      <div className="payout-section">
+        <h3 className="payout-title">Prize Distribution</h3>
+        <div className="payout-mode-selector">
+          <button 
+            className={`payout-mode-btn ${payoutMode === 'standard' ? 'active' : ''}`}
+            onClick={() => handlePayoutModeChange('standard')}
+          >
+            Standard (Equal)
+          </button>
+          <button 
+            className={`payout-mode-btn ${payoutMode === 'custom' ? 'active' : ''}`}
+            onClick={() => handlePayoutModeChange('custom')}
+          >
+            Custom
+          </button>
+        </div>
+        
+        {costPerSquare > 0 && (
+          <div className="payout-preview">
+            <div className="total-pot">
+              Total Pot: <span className="pot-amount">${getTotalPot().toLocaleString()}</span>
+            </div>
+            
+            {payoutMode === 'custom' && (
+              <div className="custom-payout-controls">
+                <div className="payout-total-display">
+                  <span className="total-label">Total Allocated:</span>
+                  <span className={`total-percentage ${getTotalPercentage() > 100 ? 'over-limit' : ''}`}>
+                    {getTotalPercentage()}%
+                  </span>
+                  <span className="remaining-amount">
+                    (${Math.round((getTotalPot() * (100 - getTotalPercentage())) / 100).toLocaleString()} remaining)
+                  </span>
+                </div>
+                <div className="quarter-sliders">
+                  {['quarter1', 'quarter2', 'quarter3', 'quarter4'].map((quarter, index) => (
+                    <div key={quarter} className="quarter-slider">
+                      <label className="quarter-label">
+                        Q{index + 1}
+                        <span className="quarter-percentage">{customPayouts[quarter]}%</span>
+                        <span className="quarter-amount">${getQuarterPayout(quarter).toLocaleString()}</span>
+                      </label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={customPayouts[quarter]}
+                        onChange={(e) => handleCustomPayoutChange(quarter, parseInt(e.target.value))}
+                        className="payout-slider"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {payoutMode === 'standard' && (
+              <div className="standard-payout-display">
+                <div className="quarter-payouts">
+                  {[1, 2, 3, 4].map(quarter => (
+                    <div key={quarter} className="quarter-payout">
+                      <span className="quarter-name">Q{quarter}</span>
+                      <span className="quarter-amount">${getQuarterPayout(`quarter${quarter}`).toLocaleString()}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
       <button 
         onClick={handleGoClick}
-        disabled={!selectedEventId}
+        disabled={
+          !selectedEventId || 
+          !costPerSquare || 
+          costPerSquare <= 0 ||
+          (payoutMode === 'custom' && getTotalPercentage() > 100)
+        }
         className="go-button"
       >
         Enter Names

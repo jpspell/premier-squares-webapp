@@ -43,13 +43,14 @@ export const contestAPI = {
   }, 'aggressive'),
 
   // Create new contest
-  createContest: async (eventId, costPerSquare) => {
+  createContest: async (eventId, costPerSquare, quarterPrizes) => {
     return handleAsyncOperation(async () => {
       const response = await secureFetch(`${API_BASE_URL}/contests`, {
         method: 'POST',
         body: JSON.stringify({
           eventId,
-          costPerSquare
+          costPerSquare,
+          quarterPrizes
         })
       });
 

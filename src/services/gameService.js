@@ -151,11 +151,11 @@ export async function getAllNFLGames() {
 }
 
 // Service for creating a new squares game
-export async function createSquaresGame(eventId, costPerSquare) {
+export async function createSquaresGame(eventId, costPerSquare, quarterPrizes) {
   try {
-    return await contestAPI.createContest(eventId, costPerSquare);
+    return await contestAPI.createContest(eventId, costPerSquare, quarterPrizes);
   } catch (error) {
-    reportError(error, 'server', { operation: 'createSquaresGame', eventId, costPerSquare });
+    reportError(error, 'server', { operation: 'createSquaresGame', eventId, costPerSquare, quarterPrizes });
     throw error;
   }
 }
