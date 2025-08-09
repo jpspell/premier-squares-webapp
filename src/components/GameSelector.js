@@ -76,6 +76,12 @@ function GameSelector({ onGameSelect }) {
       return;
     }
     
+    // Prevent values greater than 1000
+    if (numericValue > 1000) {
+      // Don't update the input if the value would exceed 1000
+      return;
+    }
+    
     // Convert back to string without leading zeros
     const cleanedValue = numericValue.toString();
     
@@ -209,7 +215,7 @@ function GameSelector({ onGameSelect }) {
                   value={costInputValue}
                   onChange={handleSquareCostChange}
                   min="1"
-                  max="10000"
+                  max="1000"
                   className="cost-input"
                   placeholder="10"
                 />

@@ -76,8 +76,8 @@ export const validateCostPerSquare = (cost) => {
     return { isValid: false, message: 'costPerSquare must be a positive number' };
   }
   
-  if (numCost > 10000) {
-    return { isValid: false, message: 'costPerSquare cannot exceed $10,000' };
+  if (numCost > 1000) {
+    return { isValid: false, message: 'costPerSquare cannot exceed $1,000' };
   }
   
   // Check precision (max 2 decimal places)
