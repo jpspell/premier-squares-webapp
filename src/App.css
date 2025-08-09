@@ -1007,14 +1007,14 @@ body.no-scroll {
   padding: 0.5rem 0.75rem;
   border-radius: 0.25rem;
   transition: all 0.2s ease;
-  min-width: 200px;
-  max-width: 300px;
+  width: 280px;
   text-align: center;
   display: block;
   white-space: normal;
   word-wrap: break-word;
   overflow-wrap: break-word;
   line-height: 1.3;
+  box-sizing: border-box;
 }
 
 .quarter-score.active {
@@ -1029,6 +1029,13 @@ body.no-scroll {
   background: var(--gradient-primary);
   border: 1px solid var(--border-color);
   opacity: 0.3;
+}
+
+.winner-name {
+  font-weight: 600;
+  color: white;
+  margin-left: 0.5rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 /* Mobile Responsive Design */

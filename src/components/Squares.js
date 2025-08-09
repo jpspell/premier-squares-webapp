@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { contestAPI } from '../services/apiService';
 import { getNFLGameData } from '../services/gameService';
@@ -17,6 +17,11 @@ const sanitizeHtml = (str) => {
     .replace(/\//g, '&#x2F;');
 };
 
+// Function to check if game is completed/final
+const isGameCompleted = (gameStatus) => {
+  return gameStatus === 'STATUS_FINAL';
+};
+
 function Squares() {
   const { documentId } = useParams();
   const [gameData, setGameData] = useState(null);
@@ -27,6 +32,7 @@ function Squares() {
   const [contestStatus, setContestStatus] = useState(null);
   const [isOffline, setIsOffline] = useState(false);
   const [offlineData, setOfflineData] = useState(null);
+  const intervalRef = useRef(null);
 
 
     // Fetch contest data and names
@@ -113,6 +119,13 @@ function Squares() {
            };
            
           setGameData(transformedData);
+          
+          // If game is completed, clear the interval to stop fetching
+          if (isGameCompleted(data.gameStatus) && intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+            console.log('Game completed - stopped automatic data fetching');
+          }
         } else {
           reportError(new Error('No game data returned from API'), 'server', { eventId });
           if (showLoading) {
@@ -135,12 +148,17 @@ function Squares() {
     fetchGameData(true);
 
     // Set up automatic refresh every 2 minutes without loading indicator
-    const intervalId = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       fetchGameData(false);
     }, 120000);
 
     // Cleanup interval on component unmount
-    return () => clearInterval(intervalId);
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
   }, [eventId]);
 
   // Function to get the last digit of a number
@@ -182,6 +200,25 @@ function Squares() {
     return gameData.currentPeriod > quarter || 
            gameData.gameStatus === 'final' || 
            gameData.gameStatus === 'complete';
+  };
+
+  // Function to find the winner's name for a specific quarter
+  const getQuarterWinnerName = (quarter) => {
+    if (!gameData || quarter > gameData.currentPeriod) {
+      return null; // Quarter hasn't been played yet
+    }
+
+    const scores = getCumulativeScores(quarter);
+    const homeLastDigit = getLastDigit(scores.home);
+    const awayLastDigit = getLastDigit(scores.away);
+    
+    // Calculate the grid index for the winning square
+    // Row represents away team digit, Column represents home team digit
+    const rowIndex = awayLastDigit;
+    const colIndex = homeLastDigit;
+    const gridIndex = rowIndex * 10 + colIndex + 1;
+    
+    return names[gridIndex] || `Name ${gridIndex}`;
   };
 
   // Function to determine if a square should be colored and which quarters it won
@@ -363,9 +400,11 @@ function Squares() {
               {[1, 2, 3, 4].map(quarter => {
                 const scores = getCumulativeScores(quarter);
                 const isActive = quarter <= (gameData.currentPeriod || 0);
+                const winnerName = getQuarterWinnerName(quarter);
                 return (
                   <span key={quarter} className={`quarter-score ${isActive ? 'active' : 'inactive'}`}>
                     Q{quarter}: {gameData.homeTeam.name} {highlightLastDigit(scores.home)}-{highlightLastDigit(scores.away)} {gameData.awayTeam.name}
+                    {winnerName && <span className="winner-name"> → {sanitizeHtml(winnerName)}</span>}
                   </span>
                 );
               })}
