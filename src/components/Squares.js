@@ -32,6 +32,7 @@ function Squares() {
   const [contestStatus, setContestStatus] = useState(null);
   const [isOffline, setIsOffline] = useState(false);
   const [offlineData, setOfflineData] = useState(null);
+  const [quarterPrizes, setQuarterPrizes] = useState(null);
   const intervalRef = useRef(null);
 
 
@@ -52,6 +53,10 @@ function Squares() {
         setContestStatus(status);
            
         const contestNames = data.contest?.names || data.names || [];
+        
+        // Extract quarterPrizes from contest data
+        const contestQuarterPrizes = data.contest?.quarterPrizes || data.quarterPrizes;
+        setQuarterPrizes(contestQuarterPrizes);
            
         // Extract eventId from contest data
         const contestEventId = data.contest?.eventId || data.eventId;
@@ -124,7 +129,6 @@ function Squares() {
           if (isGameCompleted(data.gameStatus) && intervalRef.current) {
             clearInterval(intervalRef.current);
             intervalRef.current = null;
-            console.log('Game completed - stopped automatic data fetching');
           }
         } else {
           reportError(new Error('No game data returned from API'), 'server', { eventId });
@@ -401,10 +405,12 @@ function Squares() {
                 const scores = getCumulativeScores(quarter);
                 const isActive = quarter <= (gameData.currentPeriod || 0);
                 const winnerName = getQuarterWinnerName(quarter);
+                const quarterPrize = quarterPrizes?.[`quarter${quarter}`];
                 return (
                   <span key={quarter} className={`quarter-score ${isActive ? 'active' : 'inactive'}`}>
                     Q{quarter}: {gameData.homeTeam.name} {highlightLastDigit(scores.home)}-{highlightLastDigit(scores.away)} {gameData.awayTeam.name}
                     {winnerName && <span className="winner-name"> → {sanitizeHtml(winnerName)}</span>}
+                    {quarterPrize && <span className="quarter-prize"> ${quarterPrize.toLocaleString()}</span>}
                   </span>
                 );
               })}

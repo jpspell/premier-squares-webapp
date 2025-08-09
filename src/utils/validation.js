@@ -1,6 +1,6 @@
 // Validation Utility Functions
 
-import { TOTAL_SQUARES, CONTEST_STATUS } from '../constants';
+import { TOTAL_SQUARES } from '../constants';
 
 // Sanitization helper functions (matching backend)
 const sanitizeString = (str) => {
@@ -32,11 +32,6 @@ const sanitizeInput = (data) => {
   }
   
   return data;
-};
-
-// Validate contest status
-export const isValidContestStatus = (status) => {
-  return status && status === CONTEST_STATUS.NEW;
 };
 
 // Validate event ID (matching backend eventIdSchema)
@@ -197,23 +192,4 @@ export const validateContestId = (contestId) => {
   }
   
   return { isValid: true, message: '', value: sanitizedContestId };
-};
-
-
-// Legacy validation functions (keeping for backward compatibility)
-export const isValidContestId = (contestId) => {
-  const result = validateContestId(contestId);
-  return result.isValid;
-};
-
-export const isValidEventId = (eventId) => {
-  const result = validateEventId(eventId);
-  return result.isValid;
-};
-
-// Export sanitization functions for use in components
-export {
-  sanitizeInput,
-  sanitizeString,
-  sanitizeArray
 };

@@ -59,17 +59,28 @@ function GameSelector({ onGameSelect }) {
       return;
     }
     
-    // Update the display value
-    setCostInputValue(inputValue);
-    
     // If input is empty, set cost to 0
     if (!inputValue || inputValue.trim() === '') {
+      setCostInputValue('');
       setCostPerSquare(0);
       return;
     }
     
-    // Parse the value (we know it's valid digits only)
+    // Remove leading zeros and convert to number
     const numericValue = parseInt(inputValue, 10);
+    
+    // If the result is 0 or NaN, handle appropriately
+    if (isNaN(numericValue) || numericValue === 0) {
+      setCostInputValue('0');
+      setCostPerSquare(0);
+      return;
+    }
+    
+    // Convert back to string without leading zeros
+    const cleanedValue = numericValue.toString();
+    
+    // Update both the display value and numeric value
+    setCostInputValue(cleanedValue);
     setCostPerSquare(numericValue);
   };
 
