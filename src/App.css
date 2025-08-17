@@ -1065,6 +1065,7 @@ body.no-scroll {
   hyphens: auto;
   text-align: center;
   max-width: 100%;
+  transition: font-size 0.3s ease-out;
 }
 
 .grid-item .quarter-indicator {

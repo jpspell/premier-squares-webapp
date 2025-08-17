@@ -240,23 +240,74 @@ function Squares() {
 
   // Window resize effect - adjust font sizes when window is resized
   useEffect(() => {
+    let lastWidth = window.innerWidth;
+    let lastHeight = window.innerHeight;
+    let lastVisualViewportScale = window.visualViewport?.scale || 1;
+    let zoomTimeoutRef = null;
+    let isZooming = false;
+
     const handleResize = () => {
-      // Debounce resize events
+      const currentWidth = window.innerWidth;
+      const currentHeight = window.innerHeight;
+      const currentVisualViewportScale = window.visualViewport?.scale || 1;
+      
+      // Check if this is a zoom operation using visual viewport
+      const scaleChange = Math.abs(currentVisualViewportScale - lastVisualViewportScale);
+      const isZoomOperation = scaleChange > 0.01; // Detect zoom changes
+      
+      // Calculate the change in dimensions
+      const widthChange = Math.abs(currentWidth - lastWidth);
+      const heightChange = Math.abs(currentHeight - lastHeight);
+      
+      // If it's a zoom operation or small dimension change, treat as zoom
+      if (isZoomOperation || (widthChange < 50 && heightChange < 50)) {
+        isZooming = true;
+        
+        // Clear any existing timeout
+        if (zoomTimeoutRef) {
+          clearTimeout(zoomTimeoutRef);
+        }
+        
+        // Set a longer delay for zoom operations to let them complete
+        zoomTimeoutRef = setTimeout(() => {
+          adjustAllNameFontSizes();
+          isZooming = false;
+        }, 800);
+      } else if (!isZooming) {
+        // For actual resize events (not zoom), use normal debouncing
+        if (resizeTimeoutRef.current) {
+          clearTimeout(resizeTimeoutRef.current);
+        }
+        
+        resizeTimeoutRef.current = setTimeout(() => {
+          adjustAllNameFontSizes();
+        }, 150);
+      }
+      
+      // Update last dimensions and scale
+      lastWidth = currentWidth;
+      lastHeight = currentHeight;
+      lastVisualViewportScale = currentVisualViewportScale;
+    };
+
+    // Use visual viewport API if available (better for mobile zoom detection)
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleResize);
+    } else {
+      window.addEventListener('resize', handleResize);
+    }
+    
+    return () => {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', handleResize);
+      } else {
+        window.removeEventListener('resize', handleResize);
+      }
       if (resizeTimeoutRef.current) {
         clearTimeout(resizeTimeoutRef.current);
       }
-      
-      resizeTimeoutRef.current = setTimeout(() => {
-        adjustAllNameFontSizes();
-      }, 150);
-    };
-
-    window.addEventListener('resize', handleResize);
-    
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      if (resizeTimeoutRef.current) {
-        clearTimeout(resizeTimeoutRef.current);
+      if (zoomTimeoutRef) {
+        clearTimeout(zoomTimeoutRef);
       }
     };
   }, []);
