@@ -228,122 +228,26 @@ function Squares() {
     };
   }, [eventId]);
 
-  // Dynamic font sizing effect - adjust font sizes when names or game data changes
+  // Initial font sizing effect - adjust font sizes only on first load if at normal zoom and not scrollable
   useEffect(() => {
     if (Object.keys(names).length > 0 && gameData) {
       // Small delay to ensure DOM is rendered
       setTimeout(() => {
-        adjustAllNameFontSizes();
+        // Check if page is at normal zoom (100% or very close)
+        const currentVisualViewportScale = window.visualViewport?.scale || 1;
+        const isAtNormalZoom = Math.abs(currentVisualViewportScale - 1) < 0.01;
+        
+        // Check if page is scrollable (has vertical scroll offset)
+        const currentVisualViewportOffsetY = window.visualViewport?.offsetTop || 0;
+        const isScrollable = currentVisualViewportOffsetY > 0;
+        
+        // Only adjust font sizes if at normal zoom and not scrollable
+        if (isAtNormalZoom && !isScrollable) {
+          adjustAllNameFontSizes();
+        }
       }, 100);
     }
   }, [names, gameData]);
-
-  // Window resize effect - adjust font sizes when window is resized
-  useEffect(() => {
-    let lastWidth = window.innerWidth;
-    let lastHeight = window.innerHeight;
-    let lastVisualViewportScale = window.visualViewport?.scale || 1;
-    let lastVisualViewportOffsetY = window.visualViewport?.offsetTop || 0;
-    let zoomTimeoutRef = null;
-    let scrollTimeoutRef = null;
-    let isZooming = false;
-    let isScrolling = false;
-
-    const handleResize = () => {
-      const currentWidth = window.innerWidth;
-      const currentHeight = window.innerHeight;
-      const currentVisualViewportScale = window.visualViewport?.scale || 1;
-      const currentVisualViewportOffsetY = window.visualViewport?.offsetTop || 0;
-      
-      // Check if this is a zoom operation using visual viewport
-      const scaleChange = Math.abs(currentVisualViewportScale - lastVisualViewportScale);
-      const isZoomOperation = scaleChange > 0.01; // Detect zoom changes
-      
-      // Check if this is a scroll operation
-      const scrollChange = Math.abs(currentVisualViewportOffsetY - lastVisualViewportOffsetY);
-      const isScrollOperation = scrollChange > 5; // Detect scroll changes
-      
-      // Calculate the change in dimensions
-      const widthChange = Math.abs(currentWidth - lastWidth);
-      const heightChange = Math.abs(currentHeight - lastHeight);
-      
-      // If it's a scroll operation, ignore it
-      if (isScrollOperation) {
-        isScrolling = true;
-        
-        // Clear any existing scroll timeout
-        if (scrollTimeoutRef) {
-          clearTimeout(scrollTimeoutRef);
-        }
-        
-        // Set a timeout to reset scrolling state
-        scrollTimeoutRef = setTimeout(() => {
-          isScrolling = false;
-        }, 300);
-        
-        // Update only the scroll position, don't recalculate fonts
-        lastVisualViewportOffsetY = currentVisualViewportOffsetY;
-        return;
-      }
-      
-      // If it's a zoom operation or small dimension change, treat as zoom
-      if (isZoomOperation || (widthChange < 50 && heightChange < 50)) {
-        isZooming = true;
-        
-        // Clear any existing timeout
-        if (zoomTimeoutRef) {
-          clearTimeout(zoomTimeoutRef);
-        }
-        
-        // Set a longer delay for zoom operations to let them complete
-        zoomTimeoutRef = setTimeout(() => {
-          if (!isScrolling) {
-            adjustAllNameFontSizes();
-          }
-          isZooming = false;
-        }, 800);
-      } else if (!isZooming && !isScrolling) {
-        // For actual resize events (not zoom or scroll), use normal debouncing
-        if (resizeTimeoutRef.current) {
-          clearTimeout(resizeTimeoutRef.current);
-        }
-        
-        resizeTimeoutRef.current = setTimeout(() => {
-          adjustAllNameFontSizes();
-        }, 150);
-      }
-      
-      // Update last dimensions and scale
-      lastWidth = currentWidth;
-      lastHeight = currentHeight;
-      lastVisualViewportScale = currentVisualViewportScale;
-      lastVisualViewportOffsetY = currentVisualViewportOffsetY;
-    };
-
-    // Use visual viewport API if available (better for mobile zoom detection)
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', handleResize);
-    } else {
-      window.addEventListener('resize', handleResize);
-    }
-    
-    return () => {
-      if (window.visualViewport) {
-        window.visualViewport.removeEventListener('resize', handleResize);
-      } else {
-        window.removeEventListener('resize', handleResize);
-      }
-      if (resizeTimeoutRef.current) {
-        clearTimeout(resizeTimeoutRef.current);
-      }
-      if (zoomTimeoutRef) {
-        clearTimeout(zoomTimeoutRef);
-      }
-      if (scrollTimeoutRef) {
-        clearTimeout(scrollTimeoutRef);
-      }
-    };
-  }, []);
 
   // Function to get the last digit of a number
   const getLastDigit = (num) => num % 10;
