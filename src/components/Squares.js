@@ -243,21 +243,48 @@ function Squares() {
     let lastWidth = window.innerWidth;
     let lastHeight = window.innerHeight;
     let lastVisualViewportScale = window.visualViewport?.scale || 1;
+    let lastVisualViewportOffsetY = window.visualViewport?.offsetTop || 0;
     let zoomTimeoutRef = null;
+    let scrollTimeoutRef = null;
     let isZooming = false;
+    let isScrolling = false;
 
     const handleResize = () => {
       const currentWidth = window.innerWidth;
       const currentHeight = window.innerHeight;
       const currentVisualViewportScale = window.visualViewport?.scale || 1;
+      const currentVisualViewportOffsetY = window.visualViewport?.offsetTop || 0;
       
       // Check if this is a zoom operation using visual viewport
       const scaleChange = Math.abs(currentVisualViewportScale - lastVisualViewportScale);
       const isZoomOperation = scaleChange > 0.01; // Detect zoom changes
       
+      // Check if this is a scroll operation
+      const scrollChange = Math.abs(currentVisualViewportOffsetY - lastVisualViewportOffsetY);
+      const isScrollOperation = scrollChange > 5; // Detect scroll changes
+      
       // Calculate the change in dimensions
       const widthChange = Math.abs(currentWidth - lastWidth);
       const heightChange = Math.abs(currentHeight - lastHeight);
+      
+      // If it's a scroll operation, ignore it
+      if (isScrollOperation) {
+        isScrolling = true;
+        
+        // Clear any existing scroll timeout
+        if (scrollTimeoutRef) {
+          clearTimeout(scrollTimeoutRef);
+        }
+        
+        // Set a timeout to reset scrolling state
+        scrollTimeoutRef = setTimeout(() => {
+          isScrolling = false;
+        }, 300);
+        
+        // Update only the scroll position, don't recalculate fonts
+        lastVisualViewportOffsetY = currentVisualViewportOffsetY;
+        return;
+      }
       
       // If it's a zoom operation or small dimension change, treat as zoom
       if (isZoomOperation || (widthChange < 50 && heightChange < 50)) {
@@ -270,11 +297,13 @@ function Squares() {
         
         // Set a longer delay for zoom operations to let them complete
         zoomTimeoutRef = setTimeout(() => {
-          adjustAllNameFontSizes();
+          if (!isScrolling) {
+            adjustAllNameFontSizes();
+          }
           isZooming = false;
         }, 800);
-      } else if (!isZooming) {
-        // For actual resize events (not zoom), use normal debouncing
+      } else if (!isZooming && !isScrolling) {
+        // For actual resize events (not zoom or scroll), use normal debouncing
         if (resizeTimeoutRef.current) {
           clearTimeout(resizeTimeoutRef.current);
         }
@@ -288,6 +317,7 @@ function Squares() {
       lastWidth = currentWidth;
       lastHeight = currentHeight;
       lastVisualViewportScale = currentVisualViewportScale;
+      lastVisualViewportOffsetY = currentVisualViewportOffsetY;
     };
 
     // Use visual viewport API if available (better for mobile zoom detection)
@@ -308,6 +338,9 @@ function Squares() {
       }
       if (zoomTimeoutRef) {
         clearTimeout(zoomTimeoutRef);
+      }
+      if (scrollTimeoutRef) {
+        clearTimeout(scrollTimeoutRef);
       }
     };
   }, []);
