@@ -518,7 +518,12 @@ function Squares() {
                               width="16" 
                               height="16" 
                               viewBox="0 0 24 24" 
-                              style={{ marginLeft: '6px', verticalAlign: 'text-bottom' }}
+                              style={{ 
+                                marginLeft: '6px', 
+                                verticalAlign: 'text-bottom',
+                                width: 'clamp(12px, 3vw, 16px)',
+                                height: 'clamp(12px, 3vw, 16px)'
+                              }}
                             >
                               <defs>
                                 <linearGradient id="lockGradient" x1="0%" y1="0%" x2="100%" y2="100%">
