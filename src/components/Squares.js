@@ -26,18 +26,18 @@ const isGameCompleted = (gameStatus) => {
 const adjustFontSize = (element, text, maxFontSize = 0.75, minFontSize = 0.25) => {
   if (!element || !text) return;
   
-  // Check if we're at normal zoom - if not, don't adjust font size
-  const currentVisualViewportScale = window.visualViewport?.scale || 1;
-  const isAtNormalZoom = Math.abs(currentVisualViewportScale - 1) < 0.01;
-  if (!isAtNormalZoom) return;
-  
   // Get the container dimensions
   const container = element.closest('.grid-item');
   if (!container) return;
   
   const containerRect = container.getBoundingClientRect();
-  const availableWidth = containerRect.width * 0.85; // Leave 15% margin
-  const availableHeight = containerRect.height * 0.55; // Leave space for quarter indicator
+  
+  // Get the current zoom level
+  const currentZoom = window.visualViewport?.scale || 1;
+  
+  // Calculate dimensions as if at 100% zoom (normal zoom)
+  const availableWidth = (containerRect.width / currentZoom) * 0.85; // Leave 15% margin
+  const availableHeight = (containerRect.height / currentZoom) * 0.55; // Leave space for quarter indicator
   
   // Create a temporary div to measure text with wrapping
   const tempDiv = document.createElement('div');
@@ -235,27 +235,17 @@ function Squares() {
     };
   }, [eventId]);
 
-  // Initial font sizing effect - adjust font sizes only on first load if at normal zoom and not scrollable
+  // Font sizing effect - happens on every page load, not on data refresh
   useEffect(() => {
     if (Object.keys(names).length > 0 && gameData && !hasInitialFontSizing.current) {
       // Small delay to ensure DOM is rendered
       setTimeout(() => {
-        // Check if page is at normal zoom (100% or very close)
-        const currentVisualViewportScale = window.visualViewport?.scale || 1;
-        const isAtNormalZoom = Math.abs(currentVisualViewportScale - 1) < 0.01;
-        
-        // Check if page is scrollable (has vertical scroll offset)
-        const currentVisualViewportOffsetY = window.visualViewport?.offsetTop || 0;
-        const isScrollable = currentVisualViewportOffsetY > 0;
-        
-        // Mark that initial font sizing has been attempted (regardless of whether it was done)
+        // Mark that font sizing has been done for this session
         hasInitialFontSizing.current = true;
         localStorage.setItem(fontSizingKey, 'true');
         
-        // Only adjust font sizes if at normal zoom and not scrollable
-        if (isAtNormalZoom && !isScrollable) {
-          adjustAllNameFontSizes();
-        }
+        // Always adjust font sizes on page load
+        adjustAllNameFontSizes();
       }, 100);
     }
   }, [names, gameData, fontSizingKey]);
