@@ -26,6 +26,11 @@ const isGameCompleted = (gameStatus) => {
 const adjustFontSize = (element, text, maxFontSize = 0.75, minFontSize = 0.25) => {
   if (!element || !text) return;
   
+  // Check if we're at normal zoom - if not, don't adjust font size
+  const currentVisualViewportScale = window.visualViewport?.scale || 1;
+  const isAtNormalZoom = Math.abs(currentVisualViewportScale - 1) < 0.01;
+  if (!isAtNormalZoom) return;
+  
   // Get the container dimensions
   const container = element.closest('.grid-item');
   if (!container) return;
