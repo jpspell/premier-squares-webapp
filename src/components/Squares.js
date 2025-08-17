@@ -97,6 +97,7 @@ function Squares() {
   const [quarterPrizes, setQuarterPrizes] = useState(null);
   const intervalRef = useRef(null);
   const resizeTimeoutRef = useRef(null);
+  const hasInitialFontSizing = useRef(false);
 
 
     // Fetch contest data and names
@@ -230,7 +231,7 @@ function Squares() {
 
   // Initial font sizing effect - adjust font sizes only on first load if at normal zoom and not scrollable
   useEffect(() => {
-    if (Object.keys(names).length > 0 && gameData) {
+    if (Object.keys(names).length > 0 && gameData && !hasInitialFontSizing.current) {
       // Small delay to ensure DOM is rendered
       setTimeout(() => {
         // Check if page is at normal zoom (100% or very close)
@@ -245,6 +246,9 @@ function Squares() {
         if (isAtNormalZoom && !isScrollable) {
           adjustAllNameFontSizes();
         }
+        
+        // Mark that initial font sizing has been done
+        hasInitialFontSizing.current = true;
       }, 100);
     }
   }, [names, gameData]);
