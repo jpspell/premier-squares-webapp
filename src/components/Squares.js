@@ -98,6 +98,7 @@ function Squares() {
   const intervalRef = useRef(null);
   const resizeTimeoutRef = useRef(null);
   const hasInitialFontSizing = useRef(false);
+  const fontSizingKey = `fontSizing_${documentId}`;
 
 
     // Fetch contest data and names
@@ -232,26 +233,35 @@ function Squares() {
   // Initial font sizing effect - adjust font sizes only on first load if at normal zoom and not scrollable
   useEffect(() => {
     if (Object.keys(names).length > 0 && gameData && !hasInitialFontSizing.current) {
-      // Small delay to ensure DOM is rendered
-      setTimeout(() => {
-        // Check if page is at normal zoom (100% or very close)
-        const currentVisualViewportScale = window.visualViewport?.scale || 1;
-        const isAtNormalZoom = Math.abs(currentVisualViewportScale - 1) < 0.01;
-        
-        // Check if page is scrollable (has vertical scroll offset)
-        const currentVisualViewportOffsetY = window.visualViewport?.offsetTop || 0;
-        const isScrollable = currentVisualViewportOffsetY > 0;
-        
-        // Only adjust font sizes if at normal zoom and not scrollable
-        if (isAtNormalZoom && !isScrollable) {
-          adjustAllNameFontSizes();
-        }
-        
-        // Mark that initial font sizing has been done
+      // Check if font sizing has already been done for this contest (persists across refreshes)
+      const hasFontSizingBeenDone = localStorage.getItem(fontSizingKey) === 'true';
+      
+      if (!hasFontSizingBeenDone) {
+        // Small delay to ensure DOM is rendered
+        setTimeout(() => {
+          // Check if page is at normal zoom (100% or very close)
+          const currentVisualViewportScale = window.visualViewport?.scale || 1;
+          const isAtNormalZoom = Math.abs(currentVisualViewportScale - 1) < 0.01;
+          
+          // Check if page is scrollable (has vertical scroll offset)
+          const currentVisualViewportOffsetY = window.visualViewport?.offsetTop || 0;
+          const isScrollable = currentVisualViewportOffsetY > 0;
+          
+          // Only adjust font sizes if at normal zoom and not scrollable
+          if (isAtNormalZoom && !isScrollable) {
+            adjustAllNameFontSizes();
+          }
+          
+          // Mark that initial font sizing has been attempted (regardless of whether it was done)
+          hasInitialFontSizing.current = true;
+          localStorage.setItem(fontSizingKey, 'true');
+        }, 100);
+      } else {
+        // Font sizing has already been done for this contest, just mark as complete
         hasInitialFontSizing.current = true;
-      }, 100);
+      }
     }
-  }, [names, gameData]);
+  }, [names, gameData, fontSizingKey]);
 
   // Function to get the last digit of a number
   const getLastDigit = (num) => num % 10;
@@ -488,21 +498,46 @@ function Squares() {
                 <span className="clock">{gameData.clock || '00:00'}</span>
               </>
             )}
-            <div className="quarter-scores">
-              {[1, 2, 3, 4].map(quarter => {
-                const scores = getCumulativeScores(quarter);
-                const isActive = quarter <= (gameData.currentPeriod || 0);
-                const winnerName = getQuarterWinnerName(quarter);
-                const quarterPrize = quarterPrizes?.[`quarter${quarter}`];
-                return (
-                  <span key={quarter} className={`quarter-score ${isActive ? 'active' : 'inactive'}`}>
-                    Q{quarter}: {gameData.homeTeam.name} {highlightLastDigit(scores.home)}-{highlightLastDigit(scores.away)} {gameData.awayTeam.name}
-                    {winnerName && <span className="winner-name"> → {sanitizeHtml(winnerName)}</span>}
-                    {quarterPrize && <span className="quarter-prize"> ${quarterPrize.toLocaleString()}</span>}
-                  </span>
-                );
-              })}
-            </div>
+                         <div className="quarter-scores">
+               {[1, 2, 3, 4].map(quarter => {
+                 const scores = getCumulativeScores(quarter);
+                 const isActive = quarter <= (gameData.currentPeriod || 0);
+                 const isQuarterCompleted = isQuarterFinal(quarter);
+                 const winnerName = getQuarterWinnerName(quarter);
+                 const quarterPrize = quarterPrizes?.[`quarter${quarter}`];
+                 return (
+                   <span key={quarter} className={`quarter-score ${isActive ? 'active' : 'inactive'}`}>
+                     Q{quarter}: {gameData.homeTeam.name} {highlightLastDigit(scores.home)}-{highlightLastDigit(scores.away)} {gameData.awayTeam.name}
+                     {winnerName && <span className="winner-name"> → {sanitizeHtml(winnerName)}</span>}
+                     {quarterPrize && (
+                       <span className="quarter-prize">
+                         ${quarterPrize.toLocaleString()}
+                                                   {isQuarterCompleted && (
+                            <svg 
+                              className="lock-icon" 
+                              width="16" 
+                              height="16" 
+                              viewBox="0 0 24 24" 
+                              style={{ marginLeft: '6px', verticalAlign: 'text-bottom' }}
+                            >
+                              <defs>
+                                <linearGradient id="lockGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                  <stop offset="0%" style={{ stopColor: '#FFD700', stopOpacity: 1 }} />
+                                  <stop offset="100%" style={{ stopColor: '#FFA500', stopOpacity: 1 }} />
+                                </linearGradient>
+                              </defs>
+                              <path 
+                                d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"
+                                fill="url(#lockGradient)"
+                              />
+                            </svg>
+                          )}
+                       </span>
+                     )}
+                   </span>
+                 );
+               })}
+             </div>
           </div>
         </div>
       </div>
