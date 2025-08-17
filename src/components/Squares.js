@@ -243,14 +243,14 @@ function Squares() {
         const currentVisualViewportOffsetY = window.visualViewport?.offsetTop || 0;
         const isScrollable = currentVisualViewportOffsetY > 0;
         
+        // Mark that initial font sizing has been attempted (regardless of whether it was done)
+        hasInitialFontSizing.current = true;
+        localStorage.setItem(fontSizingKey, 'true');
+        
         // Only adjust font sizes if at normal zoom and not scrollable
         if (isAtNormalZoom && !isScrollable) {
           adjustAllNameFontSizes();
         }
-        
-        // Mark that initial font sizing has been attempted (regardless of whether it was done)
-        hasInitialFontSizing.current = true;
-        localStorage.setItem(fontSizingKey, 'true');
       }, 100);
     }
   }, [names, gameData, fontSizingKey]);
