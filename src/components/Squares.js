@@ -284,11 +284,14 @@ function Squares() {
 
   // Function to determine if a quarter is final (completed)
   const isQuarterFinal = (quarter) => {
-    // A quarter is final if the current period has moved beyond it
-    // OR if the game has ended
-    return gameData.currentPeriod > quarter || 
-           gameData.gameStatus === 'final' || 
-           gameData.gameStatus === 'complete';
+    // A quarter is final if:
+    // 1. The current period has moved beyond it (we're in a later quarter)
+    // 2. OR if the game has ended completely
+    // 3. OR if we're in halftime (quarter 2 is completed)
+    // 4. EXCEPT: If we're in overtime (period > 4), quarter 4 is not final until game ends
+    return (gameData.currentPeriod > quarter && !(quarter === 4 && gameData.currentPeriod > 4 && gameData.gameStatus !== 'STATUS_FINAL')) || 
+           gameData.gameStatus === 'STATUS_FINAL' ||
+           (quarter === 2 && gameData.gameStatus === 'STATUS_HALFTIME');
   };
 
   // Function to find the winner's name for a specific quarter
