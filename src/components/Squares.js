@@ -22,6 +22,68 @@ const isGameCompleted = (gameStatus) => {
   return gameStatus === 'STATUS_FINAL';
 };
 
+// Function to dynamically adjust font size for names
+const adjustFontSize = (element, text, maxFontSize = 0.75, minFontSize = 0.25) => {
+  if (!element || !text) return;
+  
+  // Get the container dimensions
+  const container = element.closest('.grid-item');
+  if (!container) return;
+  
+  const containerRect = container.getBoundingClientRect();
+  const availableWidth = containerRect.width * 0.85; // Leave 15% margin
+  const availableHeight = containerRect.height * 0.55; // Leave space for quarter indicator
+  
+  // Create a temporary div to measure text with wrapping
+  const tempDiv = document.createElement('div');
+  tempDiv.style.position = 'absolute';
+  tempDiv.style.visibility = 'hidden';
+  tempDiv.style.width = `${availableWidth}px`;
+  tempDiv.style.fontFamily = window.getComputedStyle(element).fontFamily;
+  tempDiv.style.fontWeight = window.getComputedStyle(element).fontWeight;
+  tempDiv.style.lineHeight = window.getComputedStyle(element).lineHeight;
+  tempDiv.style.wordWrap = 'break-word';
+  tempDiv.style.overflowWrap = 'break-word';
+  tempDiv.style.hyphens = 'auto';
+  tempDiv.style.textAlign = 'center';
+  tempDiv.textContent = text;
+  document.body.appendChild(tempDiv);
+  
+  let fontSize = maxFontSize;
+  let textFits = false;
+  
+  // Binary search for the optimal font size
+  while (fontSize >= minFontSize && !textFits) {
+    tempDiv.style.fontSize = `${fontSize}rem`;
+    const textRect = tempDiv.getBoundingClientRect();
+    
+    if (textRect.height <= availableHeight) {
+      textFits = true;
+    } else {
+      fontSize -= 0.025; // Reduce font size by 0.025rem for finer control
+    }
+  }
+  
+  // Clean up
+  document.body.removeChild(tempDiv);
+  
+  // Apply the calculated font size
+  if (textFits) {
+    element.style.fontSize = `${fontSize}rem`;
+  } else {
+    element.style.fontSize = `${minFontSize}rem`;
+  }
+};
+
+// Function to adjust all name font sizes
+const adjustAllNameFontSizes = () => {
+  const nameElements = document.querySelectorAll('.grid-item .name');
+  nameElements.forEach(element => {
+    const text = element.textContent || element.innerText;
+    adjustFontSize(element, text);
+  });
+};
+
 function Squares() {
   const { documentId } = useParams();
   const [gameData, setGameData] = useState(null);
@@ -34,6 +96,7 @@ function Squares() {
   const [offlineData, setOfflineData] = useState(null);
   const [quarterPrizes, setQuarterPrizes] = useState(null);
   const intervalRef = useRef(null);
+  const resizeTimeoutRef = useRef(null);
 
 
     // Fetch contest data and names
@@ -164,6 +227,39 @@ function Squares() {
       }
     };
   }, [eventId]);
+
+  // Dynamic font sizing effect - adjust font sizes when names or game data changes
+  useEffect(() => {
+    if (Object.keys(names).length > 0 && gameData) {
+      // Small delay to ensure DOM is rendered
+      setTimeout(() => {
+        adjustAllNameFontSizes();
+      }, 100);
+    }
+  }, [names, gameData]);
+
+  // Window resize effect - adjust font sizes when window is resized
+  useEffect(() => {
+    const handleResize = () => {
+      // Debounce resize events
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current);
+      }
+      
+      resizeTimeoutRef.current = setTimeout(() => {
+        adjustAllNameFontSizes();
+      }, 150);
+    };
+
+    window.addEventListener('resize', handleResize);
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Function to get the last digit of a number
   const getLastDigit = (num) => num % 10;

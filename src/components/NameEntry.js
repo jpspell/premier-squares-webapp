@@ -16,6 +16,35 @@ const sanitizeInput = (str) => {
     .replace(/\//g, '&#x2F;');
 };
 
+// List of random first and last names
+const randomNames = [
+  'James Smith', 'Mary Johnson', 'John Williams', 'Patricia Brown', 'Robert Jones', 'Jennifer Garcia', 
+  'Michael Miller', 'Linda Davis', 'William Rodriguez', 'Elizabeth Martinez', 'David Anderson', 'Barbara Taylor',
+  'Richard Thomas', 'Susan Hernandez', 'Joseph Moore', 'Jessica Martin', 'Thomas Jackson', 'Sarah Thompson', 
+  'Christopher White', 'Karen Lopez', 'Charles Lee', 'Nancy Gonzalez', 'Daniel Wilson', 'Lisa Perez',
+  'Matthew Anderson', 'Betty Hall', 'Anthony Young', 'Helen Allen', 'Mark King', 'Sandra Wright', 
+  'Donald Scott', 'Donna Green', 'Steven Baker', 'Carol Adams', 'Paul Nelson', 'Ruth Hill',
+  'Andrew Carter', 'Sharon Mitchell', 'Joshua Roberts', 'Michelle Turner', 'Kenneth Phillips', 'Laura Campbell',
+  'Kevin Parker', 'Emily Evans', 'Brian Edwards', 'Kimberly Collins', 'George Stewart', 'Deborah Sanchez',
+  'Edward Morris', 'Dorothy Rogers', 'Ronald Reed', 'Lisa Cook', 'Timothy Morgan', 'Nancy Bell',
+  'Jason Murphy', 'Karen Bailey', 'Jeffrey Rivera', 'Betty Cooper', 'Ryan Richardson', 'Helen Cox',
+  'Jacob Howard', 'Sandra Ward', 'Gary Torres', 'Donna Peterson', 'Nicholas Gray', 'Carol Ramirez',
+  'Eric James', 'Ruth Watson', 'Jonathan Brooks', 'Sharon Kelly', 'Stephen Sanders', 'Michelle Price',
+  'Larry Bennett', 'Laura Wood', 'Justin Barnes', 'Emily Ross', 'Scott Henderson', 'Kimberly Coleman',
+  'Brandon Jenkins', 'Deborah Perry', 'Benjamin Powell', 'Dorothy Long', 'Samuel Patterson', 'Lisa Hughes',
+  'Frank Flores', 'Nancy Butler', 'Gregory Simmons', 'Karen Foster', 'Raymond Bryant', 'Betty Alexander',
+  'Alexander Russell', 'Helen Griffin', 'Patrick Diaz', 'Sandra Hayes', 'Jack Sanders', 'Donna Price',
+  'Dennis Bennett', 'Carol Wood', 'Jerry Barnes', 'Ruth Ross', 'Adam Henderson', 'Virginia Coleman',
+  'Bruce Jenkins', 'Evelyn Perry', 'Carl Powell', 'Jean Long', 'Earl Patterson', 'Cheryl Hughes',
+  'Fred Flores', 'Mildred Butler', 'Harry Simmons', 'Pamela Foster', 'Ira Bryant', 'Nicole Alexander',
+  'Jack Russell', 'Kathy Griffin', 'Keith Diaz', 'Diane Hayes', 'Larry Sanders', 'Joyce Price',
+  'Milton Bennett', 'Diana Wood', 'Nathan Barnes', 'Gloria Ross', 'Oscar Henderson', 'Evelyn Coleman',
+  'Philip Jenkins', 'Jean Perry', 'Quentin Powell', 'Mabel Long', 'Roger Patterson', 'Florence Hughes',
+  'Stanley Flores', 'Grace Butler', 'Terry Simmons', 'Thelma Foster', 'Ulysses Bryant', 'Lucille Alexander',
+  'Victor Russell', 'Edna Griffin', 'Walter Diaz', 'Mabel Hayes', 'Xavier Sanders', 'Grace Price',
+  'Yves Bennett', 'Thelma Wood', 'Zachary Barnes', 'Lucille Ross', 'Adam Henderson', 'Edna Coleman'
+];
+
 function NameEntry({ contestId, onNamesSubmitted }) {
   const [names, setNames] = useState(Array(100).fill(''));
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -165,6 +194,21 @@ function NameEntry({ contestId, onNamesSubmitted }) {
     });
   };
 
+  const fillRandomNames = () => {
+    const newNames = [...names];
+    
+    // Fill only empty fields with random names
+    for (let i = 0; i < newNames.length; i++) {
+      if (!newNames[i] || newNames[i].trim() === '') {
+        const randomIndex = Math.floor(Math.random() * randomNames.length);
+        newNames[i] = randomNames[randomIndex];
+      }
+    }
+    
+    setNames(newNames);
+    setHasChanges(true);
+  };
+
   // If no contestId is provided, show an error
   if (!contestId) {
     return (
@@ -203,9 +247,18 @@ function NameEntry({ contestId, onNamesSubmitted }) {
       
       <div className="name-entry-header">
         <h1 className="name-entry-title">Enter Names for Squares</h1>
-        <button onClick={copyUrl} className={`copy-url-button ${copyStatus === 'Copied!' ? 'copied' : ''}`}>
-          {copyStatus}
-        </button>
+        <div className="header-buttons">
+          <button onClick={copyUrl} className={`copy-url-button ${copyStatus === 'Copied!' ? 'copied' : ''}`}>
+            {copyStatus}
+          </button>
+                     <button onClick={fillRandomNames} className="fill-random-button" title="Fill Random Names">
+             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <path d="M1 4V10H7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+               <path d="M23 20V14H17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+               <path d="M20.49 9C19.2214 5.33108 15.6907 2.5 11.5 2.5C6.80546 2.5 2.5 6.80546 2.5 11.5C2.5 16.1945 6.80546 20.5 11.5 20.5C15.6907 20.5 19.2214 17.6689 20.49 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+             </svg>
+           </button>
+        </div>
       </div>
       
       <div className="name-entry-form">
