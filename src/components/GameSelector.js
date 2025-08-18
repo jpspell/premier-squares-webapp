@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { getAllNFLGames, createSquaresGame } from '../services/gameService';
 import { validateEventId, validateCostPerSquare } from '../utils/validation';
 import { reportError } from '../utils/errorReporter';
@@ -17,6 +17,10 @@ function GameSelector({ onGameSelect }) {
     quarter3: 25,
     quarter4: 25
   });
+  
+  // Custom dropdown state
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     async function fetchGames() {
@@ -43,9 +47,33 @@ function GameSelector({ onGameSelect }) {
     fetchGames();
   }, []);
 
-  const handleGameChange = (event) => {
-    const eventId = event.target.value;
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleGameChange = (eventId) => {
     setSelectedEventId(eventId);
+    setIsDropdownOpen(false);
+  };
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const getSelectedGameText = () => {
+    if (!selectedEventId) return 'Select a game...';
+    const selectedGame = games.find(game => game.id === selectedEventId);
+    return selectedGame ? `${selectedGame.awayTeam} @ ${selectedGame.homeTeam} - ${selectedGame.estTime}` : 'Select a game...';
   };
 
   const handleSquareCostChange = (event) => {
@@ -189,18 +217,45 @@ function GameSelector({ onGameSelect }) {
       <div className="game-selection-row">
         <div className="game-title-section">
           <h1 className="app-title">Premier Squares</h1>
-          <select 
-            value={selectedEventId} 
-            onChange={handleGameChange}
-            className="game-dropdown-full"
-          >
-            <option value="">Select a game...</option>
-            {games.map(game => (
-              <option key={game.id} value={game.id}>
-                {game.awayTeam} @ {game.homeTeam} - {game.estTime}
-              </option>
-            ))}
-          </select>
+          <div className="custom-dropdown-container" ref={dropdownRef}>
+            <button 
+              type="button"
+              className={`custom-dropdown-button ${isDropdownOpen ? 'open' : ''} ${selectedEventId ? 'selected' : ''}`}
+              onClick={toggleDropdown}
+              aria-haspopup="listbox"
+              aria-expanded={isDropdownOpen}
+            >
+              <span className="dropdown-text">{getSelectedGameText()}</span>
+              <svg 
+                className={`dropdown-arrow ${isDropdownOpen ? 'open' : ''}`} 
+                width="16" 
+                height="16" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+            
+            {isDropdownOpen && (
+              <div className="custom-dropdown-menu">
+                <div className="dropdown-options">
+                  {games.map(game => (
+                    <button
+                      key={game.id}
+                      type="button"
+                      className={`dropdown-option ${selectedEventId === game.id ? 'selected' : ''}`}
+                      onClick={() => handleGameChange(game.id)}
+                    >
+                      <div className="game-teams">{game.awayTeam} @ {game.homeTeam}</div>
+                      <div className="game-time">{game.estTime}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
         <div className="cost-section">
           <label htmlFor="squareCost" className="cost-label">

@@ -2648,6 +2648,129 @@ body.no-scroll {
   margin: 0;
 }
 
+/* Custom Dropdown Styles */
+.custom-dropdown-container {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+}
+
+.custom-dropdown-button {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  background: var(--background-card);
+  border: 2px solid var(--border-color);
+  border-radius: 0.75rem;
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow-sm);
+  min-height: 56px;
+}
+
+.custom-dropdown-button:hover {
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-md);
+}
+
+.custom-dropdown-button.open {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.custom-dropdown-button.selected {
+  border-color: var(--primary-color);
+  background: var(--background-light);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.dropdown-text {
+  flex: 1;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-arrow {
+  color: var(--text-secondary);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+}
+
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+.custom-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--background-card);
+  border: 2px solid var(--primary-color);
+  border-top: none;
+  border-radius: 0 0 0.75rem 0.75rem;
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  max-height: 300px;
+  overflow-y: auto;
+  margin-top: -2px;
+}
+
+.dropdown-options {
+  padding: 0.5rem 0;
+}
+
+.dropdown-option {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.dropdown-option:hover {
+  background: var(--background-light);
+}
+
+.dropdown-option.selected {
+  background: var(--gradient-primary);
+  color: var(--text-primary);
+}
+
+.game-teams {
+  font-weight: 600;
+  color: inherit;
+}
+
+.game-time {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.dropdown-option.selected .game-time {
+  color: var(--text-primary);
+  opacity: 0.8;
+}
+
 /* Mobile responsive for name entry */
 @media (max-width: 768px) {
   .name-entry-container {
@@ -2673,6 +2796,26 @@ body.no-scroll {
     padding: 0.875rem 1.5rem;
     font-size: 1rem;
   }
+  
+  /* Mobile dropdown adjustments */
+  .custom-dropdown-button {
+    padding: 0.875rem 1.25rem;
+    font-size: 0.875rem;
+    min-height: 48px;
+  }
+  
+  .dropdown-option {
+    padding: 0.875rem 1.25rem;
+    font-size: 0.875rem;
+  }
+  
+  .game-teams {
+    font-size: 0.875rem;
+  }
+  
+  .game-time {
+    font-size: 0.75rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -2694,6 +2837,26 @@ body.no-scroll {
   .submit-names-button {
     padding: 0.75rem 1.25rem;
     font-size: 0.875rem;
+  }
+  
+  /* Small mobile dropdown adjustments */
+  .custom-dropdown-button {
+    padding: 0.75rem 1rem;
+    font-size: 0.8rem;
+    min-height: 44px;
+  }
+  
+  .dropdown-option {
+    padding: 0.75rem 1rem;
+    font-size: 0.8rem;
+  }
+  
+  .game-teams {
+    font-size: 0.8rem;
+  }
+  
+  .game-time {
+    font-size: 0.7rem;
   }
 }
 
