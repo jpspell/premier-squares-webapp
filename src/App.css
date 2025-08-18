@@ -2655,6 +2655,28 @@ body.no-scroll {
   max-width: 600px;
 }
 
+/* Backdrop blur when dropdown is open */
+.custom-dropdown-container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.custom-dropdown-container:has(.custom-dropdown-menu)::before {
+  opacity: 1;
+  pointer-events: none;
+}
+
 .custom-dropdown-button {
   width: 100%;
   padding: 1rem 1.5rem;
@@ -2671,6 +2693,8 @@ body.no-scroll {
   justify-content: space-between;
   box-shadow: var(--shadow-sm);
   min-height: 56px;
+  position: relative;
+  z-index: 1001;
 }
 
 .custom-dropdown-button:hover {
@@ -2720,7 +2744,7 @@ body.no-scroll {
   border-top: none;
   border-radius: 0 0 0.75rem 0.75rem;
   box-shadow: var(--shadow-lg);
-  z-index: 1000;
+  z-index: 1001;
   max-height: 300px;
   overflow-y: auto;
   margin-top: -2px;
