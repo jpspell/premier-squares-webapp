@@ -73,7 +73,41 @@ function GameSelector({ onGameSelect }) {
   const getSelectedGameText = () => {
     if (!selectedEventId) return 'Select a game...';
     const selectedGame = games.find(game => game.id === selectedEventId);
-    return selectedGame ? `${selectedGame.awayTeam} @ ${selectedGame.homeTeam} - ${selectedGame.estTime}` : 'Select a game...';
+    return selectedGame ? formatGameDisplay(selectedGame, true) : 'Select a game...';
+  };
+
+  const formatGameDisplay = (game, isSelected = false) => {
+    // Parse the date from the API format and reformat it
+    const formatDate = (dateString) => {
+      try {
+        const date = new Date(dateString);
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const day = date.getDate().toString().padStart(2, '0');
+        const year = date.getFullYear();
+        const hours = date.getHours();
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        const displayHours = hours % 12 || 12;
+        
+        return `${month}/${day}/${year}, ${displayHours}:${minutes} ${ampm}`;
+      } catch (error) {
+        // Fallback to original format if parsing fails
+        return dateString;
+      }
+    };
+
+    const formattedTime = formatDate(game.estTime);
+    
+    if (isSelected) {
+      // Single line format for selected game - just teams
+      return `${game.awayTeam} @ ${game.homeTeam}`;
+    } else {
+      // Two line format for dropdown options
+      return {
+        teams: `${game.awayTeam} @ ${game.homeTeam}`,
+        time: formattedTime
+      };
+    }
   };
 
   const handleSquareCostChange = (event) => {
@@ -241,17 +275,20 @@ function GameSelector({ onGameSelect }) {
             {isDropdownOpen && (
               <div className="custom-dropdown-menu">
                 <div className="dropdown-options">
-                  {games.map(game => (
-                    <button
-                      key={game.id}
-                      type="button"
-                      className={`dropdown-option ${selectedEventId === game.id ? 'selected' : ''}`}
-                      onClick={() => handleGameChange(game.id)}
-                    >
-                      <div className="game-teams">{game.awayTeam} @ {game.homeTeam}</div>
-                      <div className="game-time">{game.estTime}</div>
-                    </button>
-                  ))}
+                                     {games.map(game => {
+                     const display = formatGameDisplay(game, false);
+                     return (
+                       <button
+                         key={game.id}
+                         type="button"
+                         className={`dropdown-option ${selectedEventId === game.id ? 'selected' : ''}`}
+                         onClick={() => handleGameChange(game.id)}
+                       >
+                         <div className="game-teams">{display.teams}</div>
+                         <div className="game-time">{display.time}</div>
+                       </button>
+                     );
+                   })}
                 </div>
               </div>
             )}
