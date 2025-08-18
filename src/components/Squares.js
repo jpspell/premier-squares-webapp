@@ -101,7 +101,6 @@ function Squares() {
   const [offlineData, setOfflineData] = useState(null);
   const [quarterPrizes, setQuarterPrizes] = useState(null);
   const intervalRef = useRef(null);
-  const resizeTimeoutRef = useRef(null);
   const hasInitialFontSizing = useRef(false);
   const fontSizingKey = `fontSizing_${documentId}`;
 
@@ -235,16 +234,19 @@ function Squares() {
     };
   }, [eventId]);
 
-  // Font sizing effect - happens on every page load, not on data refresh
+  // Font sizing effect - happens on every page load, not on data refresh (mobile only)
   useEffect(() => {
-    if (Object.keys(names).length > 0 && gameData && !hasInitialFontSizing.current) {
+    // Only run font sizing on mobile devices
+    const isMobile = window.innerWidth <= 768;
+    
+    if (Object.keys(names).length > 0 && gameData && !hasInitialFontSizing.current && isMobile) {
       // Small delay to ensure DOM is rendered
       setTimeout(() => {
         // Mark that font sizing has been done for this session
         hasInitialFontSizing.current = true;
         localStorage.setItem(fontSizingKey, 'true');
         
-        // Always adjust font sizes on page load
+        // Always adjust font sizes on page load (mobile only)
         adjustAllNameFontSizes();
       }, 100);
     }
