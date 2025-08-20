@@ -11,18 +11,13 @@ self.addEventListener('install', (event) => {
         .then((cache) => {
           return cache.addAll([
             '/',
-            '/static/js/bundle.js',
-            '/static/css/main.css',
             '/favicon.jpg'
           ]);
         }),
       caches.open(STATIC_CACHE_NAME)
         .then((cache) => {
-          return cache.addAll([
-            '/static/js/',
-            '/static/css/',
-            '/static/media/'
-          ]);
+          // Static assets will be cached dynamically as they're requested
+          return Promise.resolve();
         }),
       caches.open(API_CACHE_NAME)
         .then((cache) => {
