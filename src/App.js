@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useParams, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useParams, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import './App.css';
 import Navigation from './components/Navigation';
 import Squares from './components/Squares';
@@ -253,6 +253,9 @@ function App() {
             <ErrorBoundary>
               <BagBuilder />
             </ErrorBoundary>
+          } />
+          <Route path="/45183" element={
+            <Navigate to="/contests/MAOHJuxqBPm0Ont6Ju3l/squares" replace />
           } />
           <Route path="/youWonTheWholeThing" element={<WinPage />} />
         </Routes>
