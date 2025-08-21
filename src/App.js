@@ -181,7 +181,7 @@ function WinPage() {
             </div>
         ) : (
           <div style={{ textAlign: 'center' }}>
-            <h1 style={{ marginBottom: '2rem', fontSize: '1.2rem' }}>🎒 You're the bag builder! Secure your prize before someone steals it! 🎒</h1>
+            <h1 style={{ marginBottom: '2rem', fontSize: '1.2rem' }}>🎒 You're the ONE TRUE BAG BUILDER! Secure your prize before someone steals it! 🎒</h1>
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
               <input
                 type="text"
