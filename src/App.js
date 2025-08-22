@@ -258,6 +258,23 @@ function App() {
             <Navigate to="/contests/MAOHJuxqBPm0Ont6Ju3l/squares" replace />
           } />
           <Route path="/youWonTheWholeThing" element={<WinPage />} />
+          <Route path="/bagBuilderBossFinal" element={
+            <div className="App">
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center', 
+                height: '100vh',
+                background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+                color: '#fbbf24',
+                fontSize: '1.5rem',
+                fontWeight: 'bold',
+                textAlign: 'center'
+              }}>
+                Not quite the correct route, try again!
+              </div>
+            </div>
+          } />
         </Routes>
       </Router>
     </ErrorBoundary>

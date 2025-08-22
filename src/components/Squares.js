@@ -37,7 +37,7 @@ const adjustFontSize = (element, text, maxFontSize = 0.75, minFontSize = 0.25) =
   
   // Calculate dimensions as if at 100% zoom (normal zoom)
   const availableWidth = (containerRect.width / currentZoom) * 0.85; // Leave 15% margin
-  const availableHeight = (containerRect.height / currentZoom) * 0.55; // Leave space for quarter indicator
+  const availableHeight = (containerRect.height / currentZoom) * 0.85; // Use most of the height since no quarter indicator
   
   // Create a temporary div to measure text with wrapping
   const tempDiv = document.createElement('div');
@@ -424,6 +424,60 @@ function Squares() {
               <span className="team-name">{gameData.homeTeam.name}</span>
               <span className="score">{gameData.homeTeam.score}</span>
             </div>
+            {/* Game Status - desktop only */}
+            <div className="game-status-desktop">
+              {gameData.gameStatus !== 'pre' && (
+                <div className="game-time-row">
+                  <span className="quarter">Q{Math.max(1, gameData.currentPeriod || 1)}</span>
+                  <span className="clock">{gameData.clock || '00:00'}</span>
+                </div>
+              )}
+              <div className="quarter-scores-desktop">
+                {[1, 2, 3, 4].map(quarter => {
+                  const scores = getCumulativeScores(quarter);
+                  const isActive = quarter <= (gameData.currentPeriod || 0);
+                  const isQuarterCompleted = isQuarterFinal(quarter);
+                  const winnerName = getQuarterWinnerName(quarter);
+                  const quarterPrize = quarterPrizes?.[`quarter${quarter}`];
+                  return (
+                    <span key={quarter} className={`quarter-score ${isActive ? 'active' : 'inactive'}`}>
+                      Q{quarter}: {gameData.homeTeam.name} {highlightLastDigit(scores.home)}-{highlightLastDigit(scores.away)} {gameData.awayTeam.name}
+                      {winnerName && <span className="winner-name"> → {sanitizeHtml(winnerName)}</span>}
+                      {quarterPrize && (
+                        <span className="quarter-prize">
+                          ${quarterPrize.toLocaleString()}
+                          {isQuarterCompleted && (
+                            <svg 
+                              className="lock-icon" 
+                              width="16" 
+                              height="16" 
+                              viewBox="0 0 24 24" 
+                              style={{ 
+                                marginLeft: '6px', 
+                                verticalAlign: 'text-bottom',
+                                width: 'clamp(12px, 3vw, 16px)',
+                                height: 'clamp(12px, 3vw, 16px)'
+                              }}
+                            >
+                              <defs>
+                                <linearGradient id="lockGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                  <stop offset="0%" style={{ stopColor: '#FFD700', stopOpacity: 1 }} />
+                                  <stop offset="100%" style={{ stopColor: '#FFA500', stopOpacity: 1 }} />
+                                </linearGradient>
+                              </defs>
+                              <path 
+                                d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"
+                                fill="url(#lockGradient)"
+                              />
+                            </svg>
+                          )}
+                        </span>
+                      )}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
           </div>
           
           {/* Grid content with away team sidebar and grid */}
@@ -468,11 +522,6 @@ function Squares() {
                           className={`grid-item ${squareInfo.isColored ? 'colored-square' : ''}`}
                         >
                           <div className="name">{names[gridIndex] ? sanitizeHtml(names[gridIndex]) : `Name ${gridIndex}`}</div>
-                          {squareInfo.isColored && (
-                            <div className={`quarter-indicator ${squareInfo.hasOngoingQuarter ? 'ongoing' : 'final'}`}>
-                              {squareInfo.quarterText}
-                            </div>
-                          )}
                         </div>
                       );
                     })}
@@ -482,59 +531,59 @@ function Squares() {
             </div>
           </div>
           
-          {/* Game Status - moved inside grid-area at bottom */}
-          <div className="game-status">
+          {/* Game Status - mobile only */}
+          <div className="game-status-mobile">
             {gameData.gameStatus !== 'pre' && (
               <>
                 <span className="quarter">Q{Math.max(1, gameData.currentPeriod || 1)}</span>
                 <span className="clock">{gameData.clock || '00:00'}</span>
               </>
             )}
-                         <div className="quarter-scores">
-               {[1, 2, 3, 4].map(quarter => {
-                 const scores = getCumulativeScores(quarter);
-                 const isActive = quarter <= (gameData.currentPeriod || 0);
-                 const isQuarterCompleted = isQuarterFinal(quarter);
-                 const winnerName = getQuarterWinnerName(quarter);
-                 const quarterPrize = quarterPrizes?.[`quarter${quarter}`];
-                 return (
-                   <span key={quarter} className={`quarter-score ${isActive ? 'active' : 'inactive'}`}>
-                     Q{quarter}: {gameData.homeTeam.name} {highlightLastDigit(scores.home)}-{highlightLastDigit(scores.away)} {gameData.awayTeam.name}
-                     {winnerName && <span className="winner-name"> → {sanitizeHtml(winnerName)}</span>}
-                     {quarterPrize && (
-                       <span className="quarter-prize">
-                         ${quarterPrize.toLocaleString()}
-                                                   {isQuarterCompleted && (
-                            <svg 
-                              className="lock-icon" 
-                              width="16" 
-                              height="16" 
-                              viewBox="0 0 24 24" 
-                              style={{ 
-                                marginLeft: '6px', 
-                                verticalAlign: 'text-bottom',
-                                width: 'clamp(12px, 3vw, 16px)',
-                                height: 'clamp(12px, 3vw, 16px)'
-                              }}
-                            >
-                              <defs>
-                                <linearGradient id="lockGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                  <stop offset="0%" style={{ stopColor: '#FFD700', stopOpacity: 1 }} />
-                                  <stop offset="100%" style={{ stopColor: '#FFA500', stopOpacity: 1 }} />
-                                </linearGradient>
-                              </defs>
-                              <path 
-                                d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"
-                                fill="url(#lockGradient)"
-                              />
-                            </svg>
-                          )}
-                       </span>
-                     )}
-                   </span>
-                 );
-               })}
-             </div>
+            <div className="quarter-scores-mobile">
+              {[1, 2, 3, 4].map(quarter => {
+                const scores = getCumulativeScores(quarter);
+                const isActive = quarter <= (gameData.currentPeriod || 0);
+                const isQuarterCompleted = isQuarterFinal(quarter);
+                const winnerName = getQuarterWinnerName(quarter);
+                const quarterPrize = quarterPrizes?.[`quarter${quarter}`];
+                return (
+                  <span key={quarter} className={`quarter-score ${isActive ? 'active' : 'inactive'}`}>
+                    Q{quarter}: {gameData.homeTeam.name} {highlightLastDigit(scores.home)}-{highlightLastDigit(scores.away)} {gameData.awayTeam.name}
+                    {winnerName && <span className="winner-name"> → {sanitizeHtml(winnerName)}</span>}
+                    {quarterPrize && (
+                      <span className="quarter-prize">
+                        ${quarterPrize.toLocaleString()}
+                        {isQuarterCompleted && (
+                          <svg 
+                            className="lock-icon" 
+                            width="16" 
+                            height="16" 
+                            viewBox="0 0 24 24" 
+                            style={{ 
+                              marginLeft: '6px', 
+                              verticalAlign: 'text-bottom',
+                              width: 'clamp(12px, 3vw, 16px)',
+                              height: 'clamp(12px, 3vw, 16px)'
+                            }}
+                          >
+                            <defs>
+                              <linearGradient id="lockGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style={{ stopColor: '#FFD700', stopOpacity: 1 }} />
+                                <stop offset="100%" style={{ stopColor: '#FFA500', stopOpacity: 1 }} />
+                              </linearGradient>
+                            </defs>
+                            <path 
+                              d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"
+                              fill="url(#lockGradient)"
+                            />
+                          </svg>
+                        )}
+                      </span>
+                    )}
+                  </span>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
