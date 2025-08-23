@@ -20,6 +20,7 @@ function GameSelector({ onGameSelect }) {
   
   // Custom dropdown state
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState('bottom');
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -47,7 +48,7 @@ function GameSelector({ onGameSelect }) {
     fetchGames();
   }, []);
 
-  // Close dropdown when clicking outside
+  // Close dropdown when clicking outside and handle window resize
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -55,11 +56,32 @@ function GameSelector({ onGameSelect }) {
       }
     };
 
+    const handleWindowResize = () => {
+      if (isDropdownOpen) {
+        // Recalculate position on window resize
+        const buttonElement = dropdownRef.current?.querySelector('.custom-dropdown-button');
+        if (buttonElement) {
+          const buttonRect = buttonElement.getBoundingClientRect();
+          const viewportHeight = window.innerHeight;
+          const dropdownHeight = 400;
+          
+          if (buttonRect.bottom + dropdownHeight > viewportHeight) {
+            setDropdownPosition('top');
+          } else {
+            setDropdownPosition('bottom');
+          }
+        }
+      }
+    };
+
     document.addEventListener('mousedown', handleClickOutside);
+    window.addEventListener('resize', handleWindowResize);
+    
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('resize', handleWindowResize);
     };
-  }, []);
+  }, [isDropdownOpen]);
 
   const handleGameChange = (eventId) => {
     setSelectedEventId(eventId);
@@ -67,6 +89,22 @@ function GameSelector({ onGameSelect }) {
   };
 
   const toggleDropdown = () => {
+    if (!isDropdownOpen) {
+      // Calculate if dropdown should open above or below
+      const buttonElement = dropdownRef.current?.querySelector('.custom-dropdown-button');
+      if (buttonElement) {
+        const buttonRect = buttonElement.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        const dropdownHeight = 400; // max-height from CSS
+        
+        // If there's not enough space below, position above
+        if (buttonRect.bottom + dropdownHeight > viewportHeight) {
+          setDropdownPosition('top');
+        } else {
+          setDropdownPosition('bottom');
+        }
+      }
+    }
     setIsDropdownOpen(!isDropdownOpen);
   };
 
@@ -254,7 +292,7 @@ function GameSelector({ onGameSelect }) {
           <div className="custom-dropdown-container" ref={dropdownRef}>
             <button 
               type="button"
-              className={`custom-dropdown-button ${isDropdownOpen ? 'open' : ''} ${selectedEventId ? 'selected' : ''}`}
+              className={`custom-dropdown-button ${isDropdownOpen ? `open ${dropdownPosition === 'top' ? 'dropdown-top' : 'dropdown-bottom'}` : ''} ${selectedEventId ? 'selected' : ''}`}
               onClick={toggleDropdown}
               aria-haspopup="listbox"
               aria-expanded={isDropdownOpen}
@@ -273,7 +311,7 @@ function GameSelector({ onGameSelect }) {
             </button>
             
             {isDropdownOpen && (
-              <div className="custom-dropdown-menu">
+              <div className={`custom-dropdown-menu ${dropdownPosition === 'top' ? 'dropdown-top' : 'dropdown-bottom'}`}>
                 <div className="dropdown-options">
                                      {games.map(game => {
                      const display = formatGameDisplay(game, false);
