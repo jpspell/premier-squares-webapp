@@ -22,13 +22,13 @@ const isGameCompleted = (gameStatus) => {
   return gameStatus === 'STATUS_FINAL';
 };
 
-// Function to dynamically adjust font size for names
-const adjustFontSize = (element, text, maxFontSize = 0.75, minFontSize = 0.25) => {
-  if (!element || !text) return;
+// Function to calculate required font size for a single name
+const calculateRequiredFontSize = (element, text, maxFontSize = 0.75, minFontSize = 0.25) => {
+  if (!element || !text) return minFontSize;
   
   // Get the container dimensions
   const container = element.closest('.grid-item');
-  if (!container) return;
+  if (!container) return minFontSize;
   
   const containerRect = container.getBoundingClientRect();
   
@@ -72,20 +72,27 @@ const adjustFontSize = (element, text, maxFontSize = 0.75, minFontSize = 0.25) =
   // Clean up
   document.body.removeChild(tempDiv);
   
-  // Apply the calculated font size
-  if (textFits) {
-    element.style.fontSize = `${fontSize}rem`;
-  } else {
-    element.style.fontSize = `${minFontSize}rem`;
-  }
+  // Return the calculated font size
+  return textFits ? fontSize : minFontSize;
 };
 
-// Function to adjust all name font sizes
+// Function to adjust all name font sizes to the same size
 const adjustAllNameFontSizes = () => {
   const nameElements = document.querySelectorAll('.grid-item .name');
+  let smallestFontSize = 0.75; // Start with max font size
+  
+  // First pass: find the smallest required font size
   nameElements.forEach(element => {
     const text = element.textContent || element.innerText;
-    adjustFontSize(element, text);
+    const requiredSize = calculateRequiredFontSize(element, text);
+    if (requiredSize < smallestFontSize) {
+      smallestFontSize = requiredSize;
+    }
+  });
+  
+  // Second pass: apply the smallest font size to all names
+  nameElements.forEach(element => {
+    element.style.fontSize = `${smallestFontSize}rem`;
   });
 };
 
