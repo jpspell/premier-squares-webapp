@@ -284,17 +284,7 @@ function Squares() {
     return { home: homeTotal, away: awayTotal };
   };
 
-  // Function to determine if a quarter is final (completed)
-  const isQuarterFinal = (quarter) => {
-    // A quarter is final if:
-    // 1. The current period has moved beyond it (we're in a later quarter)
-    // 2. OR if the game has ended completely
-    // 3. OR if we're in halftime (quarter 2 is completed)
-    // 4. EXCEPT: If we're in overtime (period > 4), quarter 4 is not final until game ends
-    return (gameData.currentPeriod > quarter && !(quarter === 4 && gameData.currentPeriod > 4 && gameData.gameStatus !== 'STATUS_FINAL')) || 
-           gameData.gameStatus === 'STATUS_FINAL' ||
-           (quarter === 2 && gameData.gameStatus === 'STATUS_HALFTIME');
-  };
+
 
   // Function to find the winner's name for a specific quarter
   const getQuarterWinnerName = (quarter) => {
@@ -332,7 +322,7 @@ function Squares() {
         winningQuarters.push(period);
         
         // Categorize as final or ongoing
-        if (isQuarterFinal(period)) {
+        if (gameData.currentPeriod > period) {
           finalQuarters.push(period);
         } else {
           ongoingQuarters.push(period);
@@ -436,7 +426,7 @@ function Squares() {
                 {[1, 2, 3, 4].map(quarter => {
                   const scores = getCumulativeScores(quarter);
                   const isActive = quarter <= (gameData.currentPeriod || 0);
-                  const isQuarterCompleted = isQuarterFinal(quarter);
+
                   const winnerName = getQuarterWinnerName(quarter);
                   const quarterPrize = quarterPrizes?.[`quarter${quarter}`];
                   return (
@@ -446,31 +436,6 @@ function Squares() {
                       {quarterPrize && (
                         <span className="quarter-prize">
                           ${quarterPrize.toLocaleString()}
-                          {isQuarterCompleted && (
-                            <svg 
-                              className="lock-icon" 
-                              width="16" 
-                              height="16" 
-                              viewBox="0 0 24 24" 
-                              style={{ 
-                                marginLeft: '6px', 
-                                verticalAlign: 'text-bottom',
-                                width: 'clamp(12px, 3vw, 16px)',
-                                height: 'clamp(12px, 3vw, 16px)'
-                              }}
-                            >
-                              <defs>
-                                <linearGradient id="lockGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                  <stop offset="0%" style={{ stopColor: '#FFD700', stopOpacity: 1 }} />
-                                  <stop offset="100%" style={{ stopColor: '#FFA500', stopOpacity: 1 }} />
-                                </linearGradient>
-                              </defs>
-                              <path 
-                                d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"
-                                fill="url(#lockGradient)"
-                              />
-                            </svg>
-                          )}
                         </span>
                       )}
                     </span>
@@ -543,7 +508,7 @@ function Squares() {
               {[1, 2, 3, 4].map(quarter => {
                 const scores = getCumulativeScores(quarter);
                 const isActive = quarter <= (gameData.currentPeriod || 0);
-                const isQuarterCompleted = isQuarterFinal(quarter);
+
                 const winnerName = getQuarterWinnerName(quarter);
                 const quarterPrize = quarterPrizes?.[`quarter${quarter}`];
                 return (
@@ -553,31 +518,6 @@ function Squares() {
                     {quarterPrize && (
                       <span className="quarter-prize">
                         ${quarterPrize.toLocaleString()}
-                        {isQuarterCompleted && (
-                          <svg 
-                            className="lock-icon" 
-                            width="16" 
-                            height="16" 
-                            viewBox="0 0 24 24" 
-                            style={{ 
-                              marginLeft: '6px', 
-                              verticalAlign: 'text-bottom',
-                              width: 'clamp(12px, 3vw, 16px)',
-                              height: 'clamp(12px, 3vw, 16px)'
-                            }}
-                          >
-                            <defs>
-                              <linearGradient id="lockGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style={{ stopColor: '#FFD700', stopOpacity: 1 }} />
-                                <stop offset="100%" style={{ stopColor: '#FFA500', stopOpacity: 1 }} />
-                              </linearGradient>
-                            </defs>
-                            <path 
-                              d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"
-                              fill="url(#lockGradient)"
-                            />
-                          </svg>
-                        )}
                       </span>
                     )}
                   </span>
