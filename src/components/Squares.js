@@ -438,7 +438,7 @@ function Squares() {
                   const quarterPrize = quarterPrizes?.[`quarter${quarter}`];
                   return (
                     <span key={quarter} className={`quarter-score ${isActive ? 'active' : 'inactive'}`}>
-                      Q{quarter}: {gameData.homeTeam.name} {highlightLastDigit(scores.home)}-{highlightLastDigit(scores.away)} {gameData.awayTeam.name}
+                      {quarter === 4 ? 'Final' : `Q${quarter}`}: {gameData.homeTeam.name} {highlightLastDigit(scores.home)}-{highlightLastDigit(scores.away)} {gameData.awayTeam.name}
                       {winnerName && <span className="winner-name"> → {sanitizeHtml(winnerName)}</span>}
                       {quarterPrize && (
                         <span className="quarter-prize">
@@ -520,7 +520,7 @@ function Squares() {
                 const quarterPrize = quarterPrizes?.[`quarter${quarter}`];
                 return (
                   <span key={quarter} className={`quarter-score ${isActive ? 'active' : 'inactive'}`}>
-                    Q{quarter}: {gameData.homeTeam.name} {highlightLastDigit(scores.home)}-{highlightLastDigit(scores.away)} {gameData.awayTeam.name}
+                    {quarter === 4 ? 'Final' : `Q${quarter}`}: {gameData.homeTeam.name} {highlightLastDigit(scores.home)}-{highlightLastDigit(scores.away)} {gameData.awayTeam.name}
                     {winnerName && <span className="winner-name"> → {sanitizeHtml(winnerName)}</span>}
                     {quarterPrize && (
                       <span className="quarter-prize">
