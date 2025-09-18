@@ -114,7 +114,15 @@ app.get('/api/health', (req, res) => {
 });
 
 // Serve static files from the React app build directory
-app.use(express.static(path.join(__dirname, 'build')));
+app.use(express.static(path.join(__dirname, 'build'), {
+  // Block source map files from being served
+  setHeaders: (res, path) => {
+    if (path.endsWith('.map')) {
+      res.setHeader('Content-Type', 'text/plain');
+      res.status(404).end('Not Found');
+    }
+  }
+}));
 
 // Handle React routing, return all requests to React app
 app.get('*', (req, res) => {

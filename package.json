@@ -19,8 +19,8 @@
     "test": "react-scripts test",
     "test:security": "node test-security.js",
     "eject": "react-scripts eject",
-    "build": "set NODE_ENV=production&& set REACT_APP_API_URL=https://z414f9tg84.execute-api.us-east-1.amazonaws.com/prod&& react-scripts build",
-    "build:https": "set NODE_ENV=production&& set REACT_APP_API_URL=https://z414f9tg84.execute-api.us-east-1.amazonaws.com/prod&& set HTTPS=true&& react-scripts build",
+    "build": "set NODE_ENV=production&& set REACT_APP_API_URL=https://z414f9tg84.execute-api.us-east-1.amazonaws.com/prod&& set GENERATE_SOURCEMAP=false&& react-scripts build",
+    "build:https": "set NODE_ENV=production&& set REACT_APP_API_URL=https://z414f9tg84.execute-api.us-east-1.amazonaws.com/prod&& set GENERATE_SOURCEMAP=false&& set HTTPS=true&& react-scripts build",
     "serve:https": "set HTTPS=true&& set SSL_CRT_FILE=localhost.pem&& set SSL_KEY_FILE=localhost-key.pem&& react-scripts start",
     "serve:secure": "npm run build && node server.js"
   },
@@ -42,6 +42,7 @@
       "last 1 safari version"
     ]
   },
+  "homepage": ".",
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.4",
     "@testing-library/react": "^16.3.0",
