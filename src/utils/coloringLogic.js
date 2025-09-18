@@ -59,7 +59,7 @@ export const getSquareInfo = (gameData, homeDigit, awayDigit) => {
     return { 
       isColored: true, 
       quarters: winningQuarters,
-      quarterText: winningQuarters.map(q => `Q${q}`).join(',')
+      quarterText: winningQuarters.map(q => q > 4 ? 'OT' : `Q${q}`).join(',')
     };
   }
   

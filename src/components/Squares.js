@@ -425,20 +425,23 @@ function Squares() {
             <div className="game-status-desktop">
               {gameData.gameStatus !== 'pre' && (
                 <div className="game-time-row">
-                  <span className="quarter">Q{Math.max(1, gameData.currentPeriod || 1)}</span>
+                  <span className="quarter">
+                    {gameData.currentPeriod > 4 ? 'OT' : `Q${Math.max(1, gameData.currentPeriod || 1)}`}
+                  </span>
                   <span className="clock">{gameData.clock || '00:00'}</span>
                 </div>
               )}
               <div className="quarter-scores-desktop">
-                {[1, 2, 3, 4].map(quarter => {
+                {Array.from({ length: Math.max(4, gameData.currentPeriod || 4) }, (_, i) => i + 1).map(quarter => {
                   const scores = getCumulativeScores(quarter);
                   const isActive = quarter <= (gameData.currentPeriod || 0);
 
                   const winnerName = getQuarterWinnerName(quarter);
-                  const quarterPrize = quarterPrizes?.[`quarter${quarter}`];
+                  const quarterPrize = quarterPrizes?.[`quarter${Math.min(quarter, 4)}`];
+                  const isFinalPeriod = quarter === (gameData.currentPeriod || 0) && gameData.gameStatus === 'STATUS_FINAL';
                   return (
                     <span key={quarter} className={`quarter-score ${isActive ? 'active' : 'inactive'}`}>
-                      {quarter === 4 ? 'Final' : `Q${quarter}`}: {gameData.homeTeam.name} {highlightLastDigit(scores.home)}-{highlightLastDigit(scores.away)} {gameData.awayTeam.name}
+                      {isFinalPeriod ? 'Final' : (quarter > 4 ? 'OT' : `Q${quarter}`)}: {gameData.homeTeam.name} {highlightLastDigit(scores.home)}-{highlightLastDigit(scores.away)} {gameData.awayTeam.name}
                       {winnerName && <span className="winner-name"> → {sanitizeHtml(winnerName)}</span>}
                       {quarterPrize && (
                         <span className="quarter-prize">
@@ -507,20 +510,23 @@ function Squares() {
           <div className="game-status-mobile">
             {gameData.gameStatus !== 'pre' && (
               <>
-                <span className="quarter">Q{Math.max(1, gameData.currentPeriod || 1)}</span>
+                <span className="quarter">
+                  {gameData.currentPeriod > 4 ? 'OT' : `Q${Math.max(1, gameData.currentPeriod || 1)}`}
+                </span>
                 <span className="clock">{gameData.clock || '00:00'}</span>
               </>
             )}
             <div className="quarter-scores-mobile">
-              {[1, 2, 3, 4].map(quarter => {
+              {Array.from({ length: Math.max(4, gameData.currentPeriod || 4) }, (_, i) => i + 1).map(quarter => {
                 const scores = getCumulativeScores(quarter);
                 const isActive = quarter <= (gameData.currentPeriod || 0);
 
                 const winnerName = getQuarterWinnerName(quarter);
                 const quarterPrize = quarterPrizes?.[`quarter${quarter}`];
+                const isFinalPeriod = quarter === (gameData.currentPeriod || 0) && gameData.gameStatus === 'STATUS_FINAL';
                 return (
                   <span key={quarter} className={`quarter-score ${isActive ? 'active' : 'inactive'}`}>
-                    {quarter === 4 ? 'Final' : `Q${quarter}`}: {gameData.homeTeam.name} {highlightLastDigit(scores.home)}-{highlightLastDigit(scores.away)} {gameData.awayTeam.name}
+                    {isFinalPeriod ? 'Final' : `Q${quarter}`}: {gameData.homeTeam.name} {highlightLastDigit(scores.home)}-{highlightLastDigit(scores.away)} {gameData.awayTeam.name}
                     {winnerName && <span className="winner-name"> → {sanitizeHtml(winnerName)}</span>}
                     {quarterPrize && (
                       <span className="quarter-prize">

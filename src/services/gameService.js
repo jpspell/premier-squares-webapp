@@ -55,9 +55,9 @@ export async function getNFLGameData(eventId) {
         gameStatus = competition.status.type?.name || 'unknown';
         clock = competition.status.displayClock || '';
         
-        // For completed games, set period to 4 (all quarters done)
+        // For completed games, use the actual final period (could be 4+ for OT games)
         if (gameStatus === 'STATUS_FINAL') {
-          period = 4;
+          period = competition.status.period || 4; // Use actual period, default to 4 if not available
         } else {
           // For ongoing games, try to get the current period
           period = competition.status.period || 0;
@@ -91,9 +91,9 @@ export async function getNFLGameData(eventId) {
         gameStatus = competition.status.type?.name || 'unknown';
         clock = competition.status.displayClock || '';
         
-        // For completed games, set period to 4 (all quarters done)
+        // For completed games, use the actual final period (could be 4+ for OT games)
         if (gameStatus === 'STATUS_FINAL') {
-          period = 4;
+          period = competition.status.period || 4; // Use actual period, default to 4 if not available
         } else {
           // For ongoing games, try to get the current period
           period = competition.status.period || 0;
